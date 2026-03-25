@@ -7,6 +7,16 @@
 - Replaced `high-concept.md` with the provided `ST10438528 GADS7331 POE Part 1 High Concept.pdf` as the project’s high concept source doc.
 - Day 1 scope is intentionally scaffold-only: no gameplay systems, no level logic, no asset pipeline yet.
 
+## Day 2 decisions (prototype implementation begins)
+- Implemented a minimal 2D tile-based platformer core (movement, jump, gravity, collision).
+- Added a text-based level loader using ASCII maps for `market` and `bridge`.
+- Implemented the “hero fight phase” as a timed sequence:
+  - hero attacks enemy until the enemy “dies”
+  - the fight breaks destructible floor tiles (`X`)
+  - broken areas spawn temporary hazard patches (fire)
+  - after the hero retreats off-screen, the exit becomes reachable
+- Added missing Day 2 draft ASCII layout sketches for `ForestChokePoint` and `BurningHearthRun` in `plan.md` (text-only, before full implementation).
+
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
 - Asset generation (pixel art) will happen later using ChatGPT/DALL-E outputs where appropriate.
