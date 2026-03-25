@@ -104,24 +104,26 @@ class GameApp:
         LEAVE_AFTER = 1.3  # seconds after enemy death
         MAX_FIGHT_TIME = 8.0
 
+        # Spawn hazards based on time alone.
+        # This intentionally happens even if the enemy dies slightly before DESTROY_AT.
+        if not self.destroyed and t >= DESTROY_AT:
+            # Break tiles in a radius, making hazards relevant.
+            self.tilemap.destroy_breakables(self.fight_center, radius_tiles=2.2)
+
+            # Spawn hazard patches at pre-marked cells.
+            self.fire_patches = []
+            for rect in self.tilemap.hazard_rects():
+                patch = FirePatch(rect.x, rect.y, w=rect.width, h=rect.height, duration=3.0)
+                patch.start(now)
+                self.fire_patches.append(patch)
+            self.destroyed = True
+
         if self.phase.fight_active:
             # Enemy gets attacked on a timer.
             if self.enemy.alive and now >= self.next_attack_at:
                 self.hero.attacking_until = now + 0.15
                 self.enemy.take_damage(DAMAGE)
                 self.next_attack_at = now + ATTACK_INTERVAL
-
-            if not self.destroyed and t >= DESTROY_AT:
-                # Break central floor tiles in a radius, making hazards relevant.
-                self.tilemap.destroy_breakables(self.fight_center, radius_tiles=2.2)
-
-                # Spawn hazard patches at pre-marked cells.
-                self.fire_patches = []
-                for rect in self.tilemap.hazard_rects():
-                    patch = FirePatch(rect.x, rect.y, w=rect.width, h=rect.height, duration=3.0)
-                    patch.start(now)
-                    self.fire_patches.append(patch)
-                self.destroyed = True
 
             if self.enemy.alive is False:
                 self.enemy_dead = True
