@@ -174,15 +174,18 @@ class GameApp:
         actor.rect.y = (tile_y + 1) * self.tilemap.tile_size - actor_h
 
     def _destroy_and_spawn_from_tile(self, prev_tile_x: int, prev_tile_y: int, now: float) -> None:
-        # Break tiles.
-        # Note: we want to decide whether to spawn fire based on whether the
-        # tile is breakable BEFORE destroying it (so fire doesn't float).
-        tile_was_breakable = (prev_tile_x, prev_tile_y) in self.tilemap.breakable_tiles
-        self.tilemap.destroy_breakable_tile(prev_tile_x, prev_tile_y)
+        # Route points currently represent the actor's step row (one cell above floor),
+        # so convert to the actual floor tile before applying break/fire logic.
+        floor_tile_x = prev_tile_x
+        floor_tile_y = prev_tile_y + 1
 
-        # Fire: `fire_spawn` markers live in the cell ABOVE the floor tile,
-        # so the correct marker cell is (tile_x, tile_y - 1) in internal coords.
-        fire_cell = (prev_tile_x, prev_tile_y - 1)
+        # Break tiles.
+        # Decide fire behavior based on whether the floor tile was breakable BEFORE destroying it.
+        tile_was_breakable = (floor_tile_x, floor_tile_y) in self.tilemap.breakable_tiles
+        self.tilemap.destroy_breakable_tile(floor_tile_x, floor_tile_y)
+
+        # Fire markers live in the actor-step row, i.e. the route cell itself.
+        fire_cell = (prev_tile_x, prev_tile_y)
         if tile_was_breakable:
             # Avoid fire spawning above destroyed breakable floors.
             return
