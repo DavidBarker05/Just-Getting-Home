@@ -1,187 +1,70 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
-from typing import Iterable
+from pathlib import Path
+from typing import Any
 
-from .config import TILE_SIZE, PLAYER_H, PLAYER_W
+from .config import TILE_SIZE
 
 
-@dataclass(frozen=True)
+@dataclass
 class LevelDef:
     name: str
-    ascii_map: tuple[str, ...]
     palette_bg: tuple[int, int, int]
-    # Markers:
-    #  - `S`: player spawn cell (empty cell directly above floor)
-    #  - `E`: exit cell (empty cell directly above floor)
-    #  - `A`: hero spawn cell
-    #  - `V`: enemy spawn cell
-    #  - `X`: breakable floor tile (solid until destroyed)
-    #  - `f`: fire hazard spawn cell (empty cell above floor)
-    #  - `#`: solid floor tile
+    tile_size: int
+    width_tiles: int
+    height_tiles: int
+    objects: list[dict[str, Any]]
 
 
-def _validate_map(ascii_map: Iterable[str], expected_width: int) -> tuple[str, ...]:
-    lines = tuple(ascii_map)
-    if not lines:
-        raise ValueError("Level map cannot be empty")
-    for i, line in enumerate(lines):
-        if len(line) != expected_width:
-            raise ValueError(f"Level map line {i} has width {len(line)}; expected {expected_width}")
-    return lines
+_LEVEL_CACHE: dict[str, LevelDef] = {}
 
 
-def _map_width_from_config() -> int:
-    # Screen width is 960 by default; we keep maps at 30 tiles wide.
-    return 30
+def _assets_levels_dir() -> Path:
+    # repo_root/assets/levels
+    return Path(__file__).resolve().parent.parent / "assets" / "levels"
 
 
-LEVELS: dict[str, LevelDef] = {}
+def _load_level_file(path: Path) -> LevelDef:
+    data = json.loads(path.read_text(encoding="utf-8"))
 
+    name = str(data.get("name") or path.stem).lower().strip()
+    palette_bg_raw = data["palette_bg"]
+    palette_bg = (int(palette_bg_raw[0]), int(palette_bg_raw[1]), int(palette_bg_raw[2]))
 
-def _register(level: LevelDef) -> None:
-    if level.name in LEVELS:
-        raise ValueError(f"Duplicate level name: {level.name}")
-    LEVELS[level.name] = level
+    tile_size = int(data.get("tile_size") or TILE_SIZE)
+    width_tiles = int(data["width_tiles"])
+    height_tiles = int(data["height_tiles"])
+    objects = list(data.get("objects") or [])
 
-
-_W = _map_width_from_config()
-
-# Market: hero fight breaks a gap where the player must jump over hazards.
-_market_map = _validate_map(
-    (
-        "..............................",  # 0
-        "..............................",  # 1
-        "..............................",  # 2
-        "..............................",  # 3
-        "..............................",  # 4
-        "..............................",  # 5
-        "..............................",  # 6
-        "..............................",  # 7
-        "..............................",  # 8
-        "..............................",  # 9
-        "..............................",  # 10
-        "..............................",  # 11
-        "..............................",  # 12
-        "..............................",  # 13
-        "..............................",  # 14
-        "...S..........Aff.V.......E...",  # 15 (S/A/V/f/E)
-        "#############XXXX#############",  # 16 (floor/breakables)
-    ),
-    expected_width=_W,
-)
-
-_register(
-    LevelDef(
-        name="market",
-        ascii_map=_market_map,
-        palette_bg=(30, 35, 25),
+    return LevelDef(
+        name=name,
+        palette_bg=palette_bg,
+        tile_size=tile_size,
+        width_tiles=width_tiles,
+        height_tiles=height_tiles,
+        objects=objects,
     )
-)
 
 
-# Bridge: similar structure, tuned palette; hero destroys bridge tiles in the center.
-_bridge_map = _validate_map(
-    (
-        "..............................",  # 0
-        "..............................",  # 1
-        "..............................",  # 2
-        "..............................",  # 3
-        "..............................",  # 4
-        "..............................",  # 5
-        "..............................",  # 6
-        "..............................",  # 7
-        "..............................",  # 8
-        "..............................",  # 9
-        "..............................",  # 10
-        "..............................",  # 11
-        "..............................",  # 12
-        "..............................",  # 13
-        "..............................",  # 14
-        "...S........A.ff.V........E...",  # 15
-        "#############XXXX#############",  # 16
-    ),
-    expected_width=_W,
-)
+def _load_all_levels() -> None:
+    if _LEVEL_CACHE:
+        return
 
-_register(
-    LevelDef(
-        name="bridge",
-        ascii_map=_bridge_map,
-        palette_bg=(20, 30, 40),
-    )
-)
+    levels_dir = _assets_levels_dir()
+    if not levels_dir.exists():
+        raise FileNotFoundError(f"Missing levels directory: {levels_dir}")
 
-
-# Forest choke point: breaks into a more dangerous path.
-_forest_map = _validate_map(
-    (
-        "..............................",  # 0
-        "..............................",  # 1
-        "..............................",  # 2
-        "..............................",  # 3
-        "..............................",  # 4
-        "..............................",  # 5
-        "..............................",  # 6
-        "..............................",  # 7
-        "..............................",  # 8
-        "..............................",  # 9
-        "..............................",  # 10
-        "..............................",  # 11
-        "..............................",  # 12
-        "..............................",  # 13
-        "..............................",  # 14
-        "...S.........A.ff.V......E....",  # 15 (S/A/V/f/E)
-        "############XXXXXX############",  # 16 (floor/breakables)
-    ),
-    expected_width=_W,
-)
-
-_register(
-    LevelDef(
-        name="forestchokepoint",
-        ascii_map=_forest_map,
-        palette_bg=(28, 45, 30),
-    )
-)
-
-
-# Homecoming aftermath: more breakables and fire across the “safe” route.
-_burning_map = _validate_map(
-    (
-        "..............................",  # 0
-        "..............................",  # 1
-        "..............................",  # 2
-        "..............................",  # 3
-        "..............................",  # 4
-        "..............................",  # 5
-        "..............................",  # 6
-        "..............................",  # 7
-        "..............................",  # 8
-        "..............................",  # 9
-        "..............................",  # 10
-        "..............................",  # 11
-        "..............................",  # 12
-        "..............................",  # 13
-        "..............................",  # 14
-        "...S......A.ff.V....f....E....",  # 15 (S/A/V/f/E)
-        "########XXXXXXXXXX############",  # 16 (floor/breakables)
-    ),
-    expected_width=_W,
-)
-
-_register(
-    LevelDef(
-        name="burninghearthrun",
-        ascii_map=_burning_map,
-        palette_bg=(30, 20, 15),
-    )
-)
+    for path in sorted(levels_dir.glob("*.json")):
+        level = _load_level_file(path)
+        _LEVEL_CACHE[level.name] = level
 
 
 def get_level(name: str) -> LevelDef:
+    _load_all_levels()
     key = name.lower().strip()
-    if key not in LEVELS:
-        raise KeyError(f"Unknown level: {name}. Available: {', '.join(sorted(LEVELS))}")
-    return LEVELS[key]
+    if key not in _LEVEL_CACHE:
+        raise KeyError(f"Unknown level: {name}. Available: {', '.join(sorted(_LEVEL_CACHE))}")
+    return _LEVEL_CACHE[key]
 

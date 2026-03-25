@@ -1,0 +1,21 @@
+{
+  "name": "bridge",
+  "palette_bg": [20, 30, 40],
+  "tile_size": 32,
+  "width_tiles": 30,
+  "height_tiles": 17,
+  "objects": [
+    { "kind": "floor", "x": 0, "y": 512, "w_tiles": 13, "h_tiles": 1 },
+    { "kind": "breakable_floor", "x": 416, "y": 512, "w_tiles": 4, "h_tiles": 1 },
+    { "kind": "floor", "x": 544, "y": 512, "w_tiles": 13, "h_tiles": 1 },
+
+    { "kind": "player_spawn", "x": 102, "y": 484 },
+    { "kind": "hero_spawn", "x": 391, "y": 482 },
+    { "kind": "enemy_spawn", "x": 551, "y": 482 },
+    { "kind": "exit_spawn", "x": 838, "y": 498 },
+
+    { "kind": "fire_spawn", "x": 452, "y": 500 },
+    { "kind": "fire_spawn", "x": 484, "y": 500 }
+  ]
+}
+

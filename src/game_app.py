@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pygame
 
-from .config import FIRE_H, FIRE_W, PLAYER_H, PLAYER_W, SCREEN_FPS, TILE_SIZE
+from .config import PLAYER_H, PLAYER_W, SCREEN_FPS
 from .entities import Actor, FirePatch, InputState, Player
 from .levels import LevelDef, get_level
 from .tilemap import TileMap
@@ -42,7 +42,7 @@ class GameApp:
         self._load_level()
 
     def _load_level(self) -> None:
-        self.tilemap = TileMap(self.level_def.ascii_map, tile_size=TILE_SIZE)
+        self.tilemap = TileMap(self.level_def)
         psx, psy = self.tilemap.spawns.player_spawn
         self.player = Player(psx, psy)
 
@@ -180,7 +180,12 @@ class GameApp:
         ground_color = (140, 120, 90)
         break_color = (110, 90, 70)
         for gx, gy in self.tilemap.solid_tiles:
-            r = pygame.Rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+            r = pygame.Rect(
+                gx * self.tilemap.tile_size,
+                gy * self.tilemap.tile_size,
+                self.tilemap.tile_size,
+                self.tilemap.tile_size,
+            )
             is_breakable = (gx, gy) in self.tilemap.breakable_tiles
             pygame.draw.rect(self.screen, break_color if is_breakable else ground_color, r)
             # subtle edge for pixel look

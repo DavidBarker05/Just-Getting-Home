@@ -1,0 +1,21 @@
+{
+  "name": "forestchokepoint",
+  "palette_bg": [28, 45, 30],
+  "tile_size": 32,
+  "width_tiles": 30,
+  "height_tiles": 17,
+  "objects": [
+    { "kind": "floor", "x": 0, "y": 512, "w_tiles": 12, "h_tiles": 1 },
+    { "kind": "breakable_floor", "x": 384, "y": 512, "w_tiles": 6, "h_tiles": 1 },
+    { "kind": "floor", "x": 576, "y": 512, "w_tiles": 12, "h_tiles": 1 },
+
+    { "kind": "player_spawn", "x": 102, "y": 484 },
+    { "kind": "hero_spawn", "x": 423, "y": 482 },
+    { "kind": "enemy_spawn", "x": 583, "y": 482 },
+    { "kind": "exit_spawn", "x": 806, "y": 498 },
+
+    { "kind": "fire_spawn", "x": 484, "y": 500 },
+    { "kind": "fire_spawn", "x": 516, "y": 500 }
+  ]
+}
+
