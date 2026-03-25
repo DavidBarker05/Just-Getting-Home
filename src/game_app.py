@@ -40,6 +40,8 @@ class GameApp:
         self.screen = pygame.display.set_mode((width, height))
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 26)
+        # Single simulation clock used by gameplay and debug pause/step.
+        self.sim_time = 0.0
 
         # Debug mode is only available when running from Python (not in a PyInstaller exe).
         self.debug_available = not bool(getattr(sys, "frozen", False))
@@ -87,7 +89,8 @@ class GameApp:
 
         self.hero_last_step_index = 0
         self.end_tile_processed = False
-        self.start_time = pygame.time.get_ticks() / 1000.0
+        # IMPORTANT: route timing must use the same simulation clock as run().
+        self.start_time = self.sim_time
 
         # Combat tuning (prototype feel).
         self.ATTACK_INTERVAL = 0.6
@@ -369,8 +372,7 @@ class GameApp:
 
     def run(self) -> int:
         running = True
-        smoke_start = pygame.time.get_ticks() / 1000.0
-        sim_time = 0.0
+        smoke_start = self.sim_time
 
         while running:
             raw_dt = self.clock.tick(SCREEN_FPS) / 1000.0
@@ -393,8 +395,8 @@ class GameApp:
             else:
                 dt = raw_dt
 
-            sim_time += dt
-            now = sim_time
+            self.sim_time += dt
+            now = self.sim_time
 
             if self.phase.won:
                 self._render(now)
