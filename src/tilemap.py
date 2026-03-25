@@ -58,9 +58,11 @@ class TileMap:
         }
         hazard_rects: list[pygame.Rect] = []
 
-        # JSON schema:
-        # - floor/breakable_floor: x/y are *tile coords* of the floor tiles themselves
-        # - spawn/hazard markers: x/y are the marker *cell* directly above the floor
+        # JSON schema (bottom-left origin):
+        # - floor/breakable_floor: x/y are *tile coords* of the floor tiles themselves,
+        #   where y=0 is the bottom row of the level.
+        # - spawn/hazard markers: x/y are the marker *cell* directly above the floor,
+        #   also using bottom-left origin semantics.
         for obj in objects:
             kind = str(obj.get("kind") or "").strip().lower()
             if not kind:
@@ -72,27 +74,31 @@ class TileMap:
                 w_tiles = int(obj["w_tiles"])
                 h_tiles = int(obj["h_tiles"])
 
-                for gy in range(y_tile, y_tile + h_tiles):
+                # Convert from JSON bottom-left coords to internal top-left tile coords.
+                for gy_input in range(y_tile, y_tile + h_tiles):
+                    gy_internal = (self.height_tiles - 1) - gy_input
                     for gx in range(x_tile, x_tile + w_tiles):
-                        self.solid_tiles.add((gx, gy))
+                        self.solid_tiles.add((gx, gy_internal))
                         if kind == "breakable_floor":
-                            self.breakable_tiles.add((gx, gy))
+                            self.breakable_tiles.add((gx, gy_internal))
 
             elif kind in required:
                 cell_x = int(obj["x"])
-                cell_y = int(obj["y"])
+                cell_y_input = int(obj["y"])
+                cell_y_internal = (self.height_tiles - 1) - cell_y_input
                 if kind == "player_spawn":
-                    required[kind] = self._player_spawn_from_cell(cell_x, cell_y)
+                    required[kind] = self._player_spawn_from_cell(cell_x, cell_y_internal)
                 elif kind == "exit_spawn":
-                    required[kind] = self._exit_spawn_from_cell(cell_x, cell_y)
+                    required[kind] = self._exit_spawn_from_cell(cell_x, cell_y_internal)
                 elif kind == "hero_spawn":
-                    required[kind] = self._actor_spawn_from_cell(cell_x, cell_y)
+                    required[kind] = self._actor_spawn_from_cell(cell_x, cell_y_internal)
                 elif kind == "enemy_spawn":
-                    required[kind] = self._actor_spawn_from_cell(cell_x, cell_y)
+                    required[kind] = self._actor_spawn_from_cell(cell_x, cell_y_internal)
             elif kind == "fire_spawn":
                 cell_x = int(obj["x"])
-                cell_y = int(obj["y"])
-                hazard_rects.append(self._fire_spawn_rect_from_cell(cell_x, cell_y))
+                cell_y_input = int(obj["y"])
+                cell_y_internal = (self.height_tiles - 1) - cell_y_input
+                hazard_rects.append(self._fire_spawn_rect_from_cell(cell_x, cell_y_internal))
 
         missing = [k for k, v in required.items() if v is None]
         if missing:

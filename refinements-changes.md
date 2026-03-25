@@ -20,6 +20,8 @@
 - Updated prototype progression: reaching the exit advances to the next level; only the final level shows the “You made it home!” message.
 - Refactored level data to load from external JSON files (`assets/levels/*.json`) instead of hard-coded ASCII maps, and updated the tilemap loader accordingly.
 - Refined the JSON level schema: `x`/`y` for floors, spawns, and hazards are now tile coordinates (not pixel coordinates) to make level editing simpler and consistent with fixed tile size.
+- Refined the JSON level coordinate system again: levels now use a bottom-left origin for `x`/`y` (so `y=0` is the bottom row).
+- Fixed level JSON floor placement after the origin change: floor/breakable floor now uses `y=0` (bottom row) so the world renders at the bottom of the screen.
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
