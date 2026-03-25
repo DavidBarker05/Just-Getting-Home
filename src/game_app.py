@@ -168,11 +168,17 @@ class GameApp:
                 self._destroy_and_spawn_from_tile(prev_tile_x, prev_tile_y, now)
             self.hero_last_step_index = hero_step_index
 
-        # Move actors (collisionless) to their current tiles.
-        hero_tile_x, hero_tile_y = self.route_internal[hero_step_index]
-        self._set_actor_to_tile(self.hero, hero_tile_x, hero_tile_y)
-        enemy_tile_x, enemy_tile_y = self.route_internal[enemy_step_index]
-        self._set_actor_to_tile(self.enemy, enemy_tile_x, enemy_tile_y)
+        # Move actors along the route until the enemy is defeated.
+        # Once defeated, the hero retreats off-screen and we must NOT keep
+        # snapping the hero back onto the end tile each frame.
+        if self.phase.enemy_dead:
+            end_tile_x, end_tile_y = self.route_internal[end_index]
+            self._set_actor_to_tile(self.enemy, end_tile_x, end_tile_y)
+        else:
+            hero_tile_x, hero_tile_y = self.route_internal[hero_step_index]
+            self._set_actor_to_tile(self.hero, hero_tile_x, hero_tile_y)
+            enemy_tile_x, enemy_tile_y = self.route_internal[enemy_step_index]
+            self._set_actor_to_tile(self.enemy, enemy_tile_x, enemy_tile_y)
 
         # Combat only happens at the end-of-route (the "exit" for the hero).
         if hero_step_index == end_index and not self.phase.enemy_dead:

@@ -25,6 +25,7 @@
 - Fixed fire hazards not spawning reliably when the enemy dies slightly before `DESTROY_AT`; hazards now trigger based on time alone.
 - Updated gameplay rules: player movement is locked at the start (until the hero is off-screen) and fire hazards are now permanent (no expiration).
 - Big gameplay refactor: hero/enemy now follow a per-level `route`, destroying `breakable_floor` tiles and spawning permanent fire tile-by-tile after the hero leaves each tile; levels were redesigned to create vertical traversal.
+- Fixed progression edge case: after the enemy is defeated, the hero now properly walks off-screen (so the player unlocks) instead of being re-snapped to the route end tile.
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
