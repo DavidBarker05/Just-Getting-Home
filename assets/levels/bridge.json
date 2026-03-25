@@ -29,7 +29,6 @@
     [27, 0],
     [28, 0]
   ],
-  "enemy_gap_steps": 2,
   "hero_step_interval_s": 0.22,
   "objects": [
     { "kind": "floor", "x": 0, "y": 0, "w_tiles": 10, "h_tiles": 1 },

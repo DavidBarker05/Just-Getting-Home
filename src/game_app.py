@@ -78,7 +78,6 @@ class GameApp:
             raise ValueError(f"Level '{self.level_name}' is missing 'route' in JSON.")
 
         self.hero_step_interval_s = max(0.05, float(self.level_def.hero_step_interval_s))
-        self.enemy_gap_steps = max(0, int(self.level_def.enemy_gap_steps))
 
         # Convert route points (JSON bottom-left origin) to internal top-left tile coords.
         self.route_internal: list[tuple[int, int]] = [
@@ -107,7 +106,7 @@ class GameApp:
             y = (tile_y + 1) * self.tilemap.tile_size - actor_h
             return x, y
 
-        # Start both at route[0]. Enemy will lag behind by `enemy_gap_steps`.
+        # Start both at route[0]. Hero will lag 1 behind enemy.
         hero_tile = self.route_internal[0]
         hero_x, hero_y = tile_to_actor_pos(hero_tile[0], hero_tile[1])
         self.hero = Actor(hero_x, hero_y, color_idle=(170, 60, 60), color_attack=(255, 110, 110))
