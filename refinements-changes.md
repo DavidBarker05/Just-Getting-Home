@@ -37,6 +37,12 @@
 - Fixed route/fire alignment: route points are treated as actor-step cells (one above floor), so break/fire logic now offsets to the actual floor tile when applying destruction/spawn.
 - Cleanup: removed unused `enemy_gap_steps` (hero follow gap is fixed at 1 step now).
 
+## Personal Human-Made Refinements
+### Day 1
+- None
+### Day 2
+- Designed the levels myself so that they had more fine-tuning compared to what the AI could output
+
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
 - Asset generation (pixel art) will happen later using ChatGPT/DALL-E outputs where appropriate.
