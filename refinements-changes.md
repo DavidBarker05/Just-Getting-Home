@@ -23,6 +23,7 @@
 - Refined the JSON level coordinate system again: levels now use a bottom-left origin for `x`/`y` (so `y=0` is the bottom row).
 - Fixed level JSON floor placement after the origin change: floor/breakable floor now uses `y=0` (bottom row) so the world renders at the bottom of the screen.
 - Fixed fire hazards not spawning reliably when the enemy dies slightly before `DESTROY_AT`; hazards now trigger based on time alone.
+- Updated gameplay rules: player movement is locked at the start (until the hero is off-screen) and fire hazards are now permanent (no expiration).
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
