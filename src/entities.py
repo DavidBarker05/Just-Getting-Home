@@ -21,23 +21,44 @@ class Player:
         self.vel_x = 0.0
         self.vel_y = 0.0
         self.on_ground = False
+        # Jump quality-of-life:
+        # - jump_buffer: allows a jump press shortly before landing
+        # - coyote_time: allows a jump shortly after leaving the ground
+        self.jump_buffer_time = 0.12
+        self.jump_buffer_timer = 0.0
+        self.coyote_time = 0.08
+        self.coyote_timer = 0.0
 
     def reset(self, x: float, y: float) -> None:
         self.rect.topleft = (int(x), int(y))
         self.vel_x = 0.0
         self.vel_y = 0.0
         self.on_ground = False
+        self.jump_buffer_timer = 0.0
+        self.coyote_timer = 0.0
 
     def handle_movement(self, inp: InputState, dt: float) -> None:
+        # Update timers first so input registered this frame uses a fresh budget.
+        if self.jump_buffer_timer > 0.0:
+            self.jump_buffer_timer = max(0.0, self.jump_buffer_timer - dt)
+        if self.coyote_timer > 0.0:
+            self.coyote_timer = max(0.0, self.coyote_timer - dt)
+
+        if inp.jump_pressed:
+            self.jump_buffer_timer = self.jump_buffer_time
+
         self.vel_x = 0.0
         if inp.left:
             self.vel_x = -PLAYER_SPEED
         if inp.right:
             self.vel_x = PLAYER_SPEED
 
-        if inp.jump_pressed and self.on_ground:
+        # Use buffered jump with either grounded state or coyote window.
+        if self.jump_buffer_timer > 0.0 and (self.on_ground or self.coyote_timer > 0.0):
             self.vel_y = JUMP_VELOCITY
             self.on_ground = False
+            self.jump_buffer_timer = 0.0
+            self.coyote_timer = 0.0
 
     def apply_gravity(self, dt: float) -> None:
         self.vel_y += GRAVITY * dt
@@ -61,6 +82,7 @@ class Player:
                     self.rect.bottom = tile.top
                     self.vel_y = 0.0
                     self.on_ground = True
+                    self.coyote_timer = self.coyote_time
                 elif self.vel_y < 0:
                     self.rect.top = tile.bottom
                     self.vel_y = 0.0
