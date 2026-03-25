@@ -96,18 +96,33 @@ class Actor:
 
 
 class FirePatch:
-    def __init__(self, x: float, y: float, w: int = FIRE_W, h: int = FIRE_H, duration: float = 3.0) -> None:
+    def __init__(
+        self,
+        x: float,
+        y: float,
+        w: int = FIRE_W,
+        h: int = FIRE_H,
+        duration: float | None = None,
+    ) -> None:
         self.rect = pygame.Rect(int(x), int(y), w, h)
-        self.expires_at = 0.0
         self.duration = duration
         self.active = True
+        # If duration is None, the hazard is permanent.
+        self.expires_at: float | None = None
 
     def start(self, now: float) -> None:
-        self.expires_at = now + self.duration
+        if self.duration is None:
+            self.expires_at = None
+        else:
+            self.expires_at = now + self.duration
         self.active = True
 
     def update(self, now: float) -> None:
-        if self.active and now >= self.expires_at:
+        if not self.active:
+            return
+        if self.expires_at is None:
+            return  # permanent hazard
+        if now >= self.expires_at:
             self.active = False
 
     @property

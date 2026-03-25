@@ -113,7 +113,8 @@ class GameApp:
             # Spawn hazard patches at pre-marked cells.
             self.fire_patches = []
             for rect in self.tilemap.hazard_rects():
-                patch = FirePatch(rect.x, rect.y, w=rect.width, h=rect.height, duration=3.0)
+                # Permanent hazard: no time limit.
+                patch = FirePatch(rect.x, rect.y, w=rect.width, h=rect.height, duration=None)
                 patch.start(now)
                 self.fire_patches.append(patch)
             self.destroyed = True
@@ -151,6 +152,11 @@ class GameApp:
 
     def _update_player(self, inp: InputState, dt: float) -> None:
         solids = self.tilemap.solid_rects()
+
+        # Lock player controls until the hero is fully off-screen.
+        # We still update physics so the player can settle on the ground.
+        if not self.phase.hero_left:
+            inp = InputState(left=False, right=False, jump_pressed=False)
 
         self.player.update(inp, solids, dt)
 
@@ -211,7 +217,7 @@ class GameApp:
         # HUD / status text
         if not self.phase.won:
             if not self.phase.hero_left:
-                msg = "Hero fighting... avoid hazards (jump over the danger)"
+                msg = "Hero fighting... you can move once he clears the route"
             else:
                 msg = "Hero left. Get to the exit!"
             self._draw_text(msg, 18, 16)
