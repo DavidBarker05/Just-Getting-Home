@@ -1,0 +1,16 @@
+---
+description: Require updating the change log
+alwaysApply: true
+---
+
+# Refinements requirement
+
+When you make substantive changes to the project (code, assets, or documentation), you MUST also update `refinements-changes.md` with a short entry describing:
+- What changed (file names or feature area)
+- Why it changed (decision/scope shift/rationale)
+- When it happened (Day 1/2/3 or date)
+
+# Practical checklist
+- After editing files, add a matching bullet under the appropriate section in `refinements-changes.md` before committing.
+- If the change log entry is not created, do not proceed with the commit/push.
+

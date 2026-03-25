@@ -4,6 +4,7 @@
 - Target Python `3.13` to match your jam build preference.
 - Use `pygame` for the 2D platformer foundation (`pygame==2.6.1` as the initial pinned version).
 - Use `PyInstaller` to satisfy the “build/executable” requirement for the jam (Windows-friendly).
+- Replaced `high-concept.md` with the provided `ST10438528 GADS7331 POE Part 1 High Concept.pdf` as the project’s high concept source doc.
 - Day 1 scope is intentionally scaffold-only: no gameplay systems, no level logic, no asset pipeline yet.
 
 ## Running notes (updates later)
