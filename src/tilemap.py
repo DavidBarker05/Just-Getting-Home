@@ -35,7 +35,9 @@ class TileMap:
 
     def _exit_spawn_from_cell(self, cell_x: int, cell_y: int) -> tuple[int, int]:
         x = cell_x * self.tile_size + (self.tile_size - PLAYER_W) // 2
-        y = (cell_y + 1) * self.tile_size - (PLAYER_H // 2)
+        # Exit should align with the player's collision rect:
+        # place the exit rect so its bottom rests on the floor tile.
+        y = (cell_y + 1) * self.tile_size - PLAYER_H
         return x, y
 
     def _actor_spawn_from_cell(self, cell_x: int, cell_y: int) -> tuple[int, int]:

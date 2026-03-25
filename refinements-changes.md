@@ -29,6 +29,7 @@
 - Refined hazard semantics (reverted): `fire_spawn` markers place fire on the tile above the floor tile the hero leaves (matching the earlier “floating fire over the tile” behavior before the refactor).
 - Refined level design: levels now go up then back down (exit on the same vertical level as the player), platforms are wider (avoid single-tile landings), and fire is placed only on non-`breakable_floor` tiles.
 - Updated route traversal: enemy now leads and hero follows; exit is placed at the far right of each level. Enemy stops 1 tile left of the exit tile, and the hero stops 2 tiles left.
+- Fixed exit placement: exit rect now aligns with the floor tile (no longer spawns partially inside the ground).
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
