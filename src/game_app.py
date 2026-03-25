@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import sys
 
 import pygame
 
-from .config import PLAYER_H, PLAYER_W, SCREEN_FPS
+from .config import DEBUG_STEP_LARGE_S, DEBUG_STEP_MEDIUM_S, DEBUG_STEP_SMALL_S, PLAYER_H, PLAYER_W, SCREEN_FPS
 from .entities import Actor, FirePatch, InputState, Player
 from .levels import LevelDef, get_level
 from .tilemap import TileMap
@@ -39,6 +40,16 @@ class GameApp:
         self.screen = pygame.display.set_mode((width, height))
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 26)
+
+        # Debug mode is only available when running from Python (not in a PyInstaller exe).
+        self.debug_available = not bool(getattr(sys, "frozen", False))
+        self.debug_enabled = False
+        self.debug_show_fps = False
+        self.debug_show_level_name = False
+        self.debug_god_mode = False
+        self.debug_paused = False
+        self.debug_step_request_s: float = 0.0
+        self._last_caption_update_at = 0.0
 
         self.level_def: LevelDef = get_level(self.level_name)
         self._load_level()
@@ -104,6 +115,12 @@ class GameApp:
     def _reset_level(self) -> None:
         self._load_level()
 
+    def _restart_game(self) -> None:
+        self.level_index = 0
+        self.level_name = self.level_order[self.level_index]
+        self.level_def = get_level(self.level_name)
+        self._load_level()
+
     def _handle_input(self) -> InputState:
         keys = pygame.key.get_pressed()
         left = bool(keys[pygame.K_LEFT] or keys[pygame.K_a])
@@ -118,6 +135,32 @@ class GameApp:
                 return False
             if event.type == pygame.KEYDOWN and event.key in (pygame.K_SPACE, pygame.K_w, pygame.K_UP):
                 self._jump_pressed = True
+
+            # Debug toggles (only when running from Python).
+            if self.debug_available and event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_F1:
+                    self.debug_enabled = not self.debug_enabled
+                if not self.debug_enabled:
+                    continue
+
+                if event.key == pygame.K_F2:
+                    self.debug_show_fps = not self.debug_show_fps
+                elif event.key == pygame.K_F3:
+                    self.debug_show_level_name = not self.debug_show_level_name
+                elif event.key == pygame.K_F4:
+                    self.debug_god_mode = not self.debug_god_mode
+                elif event.key == pygame.K_F5:
+                    self._reset_level()
+                elif event.key == pygame.K_F6:
+                    self._restart_game()
+                elif event.key == pygame.K_F7:
+                    self.debug_paused = not self.debug_paused
+                elif event.key == pygame.K_COMMA:
+                    self.debug_step_request_s += DEBUG_STEP_SMALL_S
+                elif event.key == pygame.K_PERIOD:
+                    self.debug_step_request_s += DEBUG_STEP_MEDIUM_S
+                elif event.key == pygame.K_SLASH:
+                    self.debug_step_request_s += DEBUG_STEP_LARGE_S
         return True
 
     def _set_actor_to_tile(self, actor: Actor, tile_x: int, tile_y: int) -> None:
@@ -219,11 +262,12 @@ class GameApp:
         self.player.update(inp, solids, dt)
 
         # Permanent hazard collision: restart level.
-        for patch in self.fire_patches:
-            if patch.active and self.player.rect.colliderect(patch.rect):
-                self.phase.lost = True
-                self._reset_level()
-                return
+        if not self.debug_god_mode:
+            for patch in self.fire_patches:
+                if patch.active and self.player.rect.colliderect(patch.rect):
+                    self.phase.lost = True
+                    self._reset_level()
+                    return
 
         # Win condition: exit is only safe after hero leaves.
         if self.phase.hero_left and self.player.rect.colliderect(self.exit_rect):
@@ -263,6 +307,11 @@ class GameApp:
         pygame.draw.rect(self.screen, (90, 170, 240), self.player.rect, border_radius=3)
         pygame.draw.rect(self.screen, (30, 80, 140), self.player.rect, width=2, border_radius=3)
 
+        if self.debug_enabled:
+            self._render_debug_overlay()
+            if self.debug_show_level_name:
+                self._draw_text_centered(f"Level: {self.level_name}", y=8)
+
         if not self.phase.won:
             if not self.phase.hero_left:
                 msg = "You are not the hero. Wait for him to leave the route."
@@ -274,6 +323,46 @@ class GameApp:
 
         pygame.display.flip()
 
+    def _draw_text_right(self, text: str, y: int) -> None:
+        surf = self.font.render(text, True, (230, 230, 220))
+        x = self.width - 12 - surf.get_width()
+        self.screen.blit(surf, (x, y))
+
+    def _draw_text_centered(self, text: str, y: int) -> None:
+        surf = self.font.render(text, True, (230, 230, 220))
+        x = (self.width - surf.get_width()) // 2
+        self.screen.blit(surf, (x, y))
+
+    def _render_debug_overlay(self) -> None:
+        # Right-justified help text (top-right).
+        lines = [
+            "Debug (F1): toggle",
+            "F2: FPS in title",
+            "F3: level name",
+            "F4: god mode",
+            "F5: restart level",
+            "F6: restart game",
+            "F7: pause/unpause",
+            f",: +{DEBUG_STEP_SMALL_S:.1f}s  .: +{DEBUG_STEP_MEDIUM_S:.1f}s  /: +{DEBUG_STEP_LARGE_S:.1f}s",
+        ]
+
+        y = 8
+        for line in lines:
+            self._draw_text_right(line, y)
+            y += 18
+
+    def _update_caption(self) -> None:
+        if not (self.debug_enabled and self.debug_show_fps):
+            pygame.display.set_caption("Just Getting Home")
+            return
+
+        now = pygame.time.get_ticks() / 1000.0
+        if now - self._last_caption_update_at < 0.25:
+            return
+        self._last_caption_update_at = now
+        fps = self.clock.get_fps()
+        pygame.display.set_caption(f"Just Getting Home  |  FPS: {fps:.1f}")
+
     def _draw_text(self, text: str, y: int, scale: int) -> None:
         surf = self.font.render(text, True, (230, 230, 220))
         self.screen.blit(surf, (16, y))
@@ -281,10 +370,11 @@ class GameApp:
     def run(self) -> int:
         running = True
         smoke_start = pygame.time.get_ticks() / 1000.0
+        sim_time = 0.0
 
         while running:
-            dt = min(1.0 / 30.0, self.clock.tick(SCREEN_FPS) / 1000.0)
-            now = pygame.time.get_ticks() / 1000.0
+            raw_dt = self.clock.tick(SCREEN_FPS) / 1000.0
+            raw_dt = min(1.0 / 30.0, raw_dt)
 
             self._jump_pressed = False
             running = self._process_events()
@@ -293,12 +383,27 @@ class GameApp:
 
             inp = self._handle_input()
 
+            # Debug pause/step time handling.
+            if self.debug_enabled and self.debug_paused:
+                if self.debug_step_request_s > 0.0:
+                    dt = min(1.0, self.debug_step_request_s)
+                    self.debug_step_request_s = max(0.0, self.debug_step_request_s - dt)
+                else:
+                    dt = 0.0
+            else:
+                dt = raw_dt
+
+            sim_time += dt
+            now = sim_time
+
             if self.phase.won:
                 self._render(now)
             else:
                 self._update_fight(now, dt)
                 self._update_player(inp, dt)
                 self._render(now)
+
+            self._update_caption()
 
             if self.smoke_test and now - smoke_start >= 1.5:
                 running = False

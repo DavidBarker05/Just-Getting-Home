@@ -12,3 +12,8 @@ JUMP_VELOCITY = -820.0  # px/s (negative is up)
 FIRE_W = 24
 FIRE_H = 12
 
+# Debug time-step increments (seconds)
+DEBUG_STEP_SMALL_S = 0.1
+DEBUG_STEP_MEDIUM_S = 0.5
+DEBUG_STEP_LARGE_S = 1.0
+

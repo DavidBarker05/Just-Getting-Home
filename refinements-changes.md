@@ -32,6 +32,7 @@
 - Fixed exit placement: exit rect now aligns with the floor tile (no longer spawns partially inside the ground).
 - Fix: player jumping is now consistent via jump buffering and coyote time (tolerates slightly early/late jump presses on landing).
 - Fixed route visuals: hero/enemy now use the route tile’s actual `y` position when being placed (no -1 tile offset).
+- Added a Python-only debug mode (disabled in the executable): F1 toggle; F2 FPS-in-title; F3 level name overlay; F4 god mode; F5 restart level; F6 restart game; F7 pause; and step-time controls (`,`/`.`/`/`) with configurable step sizes.
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
