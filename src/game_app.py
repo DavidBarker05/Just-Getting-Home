@@ -89,8 +89,8 @@ class GameApp:
 
         def tile_to_actor_pos(tile_x: int, tile_y: int) -> tuple[int, int]:
             x = tile_x * self.tilemap.tile_size + (self.tilemap.tile_size - actor_w) // 2
-            # Actors "stand" with their feet on the top edge of the floor tile.
-            y = tile_y * self.tilemap.tile_size - actor_h
+            # Align actors to the route tile row (visually consistent with the JSON route).
+            y = (tile_y + 1) * self.tilemap.tile_size - actor_h
             return x, y
 
         # Start both at route[0]. Enemy will lag behind by `enemy_gap_steps`.
@@ -125,7 +125,7 @@ class GameApp:
         actor_w = actor.rect.width
         actor_h = actor.rect.height
         actor.rect.x = tile_x * self.tilemap.tile_size + (self.tilemap.tile_size - actor_w) // 2
-        actor.rect.y = tile_y * self.tilemap.tile_size - actor_h
+        actor.rect.y = (tile_y + 1) * self.tilemap.tile_size - actor_h
 
     def _destroy_and_spawn_from_tile(self, prev_tile_x: int, prev_tile_y: int, now: float) -> None:
         # Break tiles.

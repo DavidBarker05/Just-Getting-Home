@@ -31,6 +31,7 @@
 - Updated route traversal: enemy now leads and hero follows; exit is placed at the far right of each level. Enemy stops 1 tile left of the exit tile, and the hero stops 2 tiles left.
 - Fixed exit placement: exit rect now aligns with the floor tile (no longer spawns partially inside the ground).
 - Fix: player jumping is now consistent via jump buffering and coyote time (tolerates slightly early/late jump presses on landing).
+- Fixed route visuals: hero/enemy now use the route tile’s actual `y` position when being placed (no -1 tile offset).
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
