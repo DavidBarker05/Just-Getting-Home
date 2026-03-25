@@ -1,0 +1,14 @@
+/.venv
+/venv
+__pycache__/
+*.py[cod]
+*$py.class
+*.spec
+/build/
+/dist/
+/.pytest_cache/
+.DS_Store
+.vscode/
+.idea/
+.cursor/
+/.env
