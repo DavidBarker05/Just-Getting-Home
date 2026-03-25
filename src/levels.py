@@ -16,6 +16,9 @@ class LevelDef:
     width_tiles: int
     height_tiles: int
     objects: list[dict[str, Any]]
+    route: list[tuple[int, int]]  # ordered floor-tile waypoints (bottom-left origin in JSON)
+    enemy_gap_steps: int = 2
+    hero_step_interval_s: float = 0.35
 
 
 _LEVEL_CACHE: dict[str, LevelDef] = {}
@@ -38,6 +41,20 @@ def _load_level_file(path: Path) -> LevelDef:
     height_tiles = int(data["height_tiles"])
     objects = list(data.get("objects") or [])
 
+    raw_route = data.get("route") or []
+    route: list[tuple[int, int]] = []
+    for point in raw_route:
+        # Accept either [x,y] arrays or {"x":..., "y":...} objects.
+        if isinstance(point, list) or isinstance(point, tuple):
+            if len(point) != 2:
+                continue
+            route.append((int(point[0]), int(point[1])))
+        elif isinstance(point, dict):
+            route.append((int(point["x"]), int(point["y"])))
+
+    enemy_gap_steps = int(data.get("enemy_gap_steps") or 2)
+    hero_step_interval_s = float(data.get("hero_step_interval_s") or 0.35)
+
     return LevelDef(
         name=name,
         palette_bg=palette_bg,
@@ -45,6 +62,9 @@ def _load_level_file(path: Path) -> LevelDef:
         width_tiles=width_tiles,
         height_tiles=height_tiles,
         objects=objects,
+        route=route,
+        enemy_gap_steps=enemy_gap_steps,
+        hero_step_interval_s=hero_step_interval_s,
     )
 
 

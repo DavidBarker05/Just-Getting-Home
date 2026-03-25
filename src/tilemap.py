@@ -17,6 +17,7 @@ class TileMap:
 
         self.solid_tiles: set[tuple[int, int]] = set()
         self.breakable_tiles: set[tuple[int, int]] = set()
+        self.fire_cells: set[tuple[int, int]] = set()  # fire marker cells (empty cell above a floor tile)
 
         self.spawns = self._parse_objects(level_def.objects)
 
@@ -56,7 +57,6 @@ class TileMap:
             "hero_spawn": None,
             "enemy_spawn": None,
         }
-        hazard_rects: list[pygame.Rect] = []
 
         # JSON schema (bottom-left origin):
         # - floor/breakable_floor: x/y are *tile coords* of the floor tiles themselves,
@@ -98,7 +98,9 @@ class TileMap:
                 cell_x = int(obj["x"])
                 cell_y_input = int(obj["y"])
                 cell_y_internal = (self.height_tiles - 1) - cell_y_input
-                hazard_rects.append(self._fire_spawn_rect_from_cell(cell_x, cell_y_internal))
+                # Fire spawns are stored as marker cells. We'll spawn permanent fire
+                # when the hero walks over the floor tile underneath them.
+                self.fire_cells.add((cell_x, cell_y_internal))
 
         missing = [k for k, v in required.items() if v is None]
         if missing:
@@ -113,7 +115,6 @@ class TileMap:
                 "exit_spawn": required["exit_spawn"],
                 "hero_spawn": required["hero_spawn"],
                 "enemy_spawn": required["enemy_spawn"],
-                "hazard_rects": hazard_rects,
             },
         )()
 
@@ -139,5 +140,18 @@ class TileMap:
         return removed
 
     def hazard_rects(self) -> list[pygame.Rect]:
-        return list(self.spawns.hazard_rects)
+        # Compatibility shim: build rects for all fire marker cells.
+        return [self._fire_spawn_rect_from_cell(x, y) for (x, y) in self.fire_cells]
+
+    def fire_rect_from_cell(self, cell_x: int, cell_y: int) -> pygame.Rect:
+        return self._fire_spawn_rect_from_cell(cell_x, cell_y)
+
+    def destroy_breakable_tile(self, tile_x: int, tile_y: int) -> bool:
+        tile = (tile_x, tile_y)
+        if tile not in self.breakable_tiles:
+            return False
+        self.breakable_tiles.remove(tile)
+        if tile in self.solid_tiles:
+            self.solid_tiles.remove(tile)
+        return True
 
