@@ -129,10 +129,17 @@ class GameApp:
 
     def _destroy_and_spawn_from_tile(self, prev_tile_x: int, prev_tile_y: int, now: float) -> None:
         # Break tiles.
+        # Note: we want to decide whether to spawn fire based on whether the
+        # tile is breakable BEFORE destroying it (so fire doesn't float).
+        tile_was_breakable = (prev_tile_x, prev_tile_y) in self.tilemap.breakable_tiles
         self.tilemap.destroy_breakable_tile(prev_tile_x, prev_tile_y)
 
-        # Fire: `fire_spawn` markers correspond directly to the floor tile (not above it).
-        fire_cell = (prev_tile_x, prev_tile_y)
+        # Fire: `fire_spawn` markers live in the cell ABOVE the floor tile,
+        # so the correct marker cell is (tile_x, tile_y - 1) in internal coords.
+        fire_cell = (prev_tile_x, prev_tile_y - 1)
+        if tile_was_breakable:
+            # Avoid fire spawning above destroyed breakable floors.
+            return
         if fire_cell not in self.tilemap.fire_cells:
             return
         if fire_cell in self.activated_fire_cells:

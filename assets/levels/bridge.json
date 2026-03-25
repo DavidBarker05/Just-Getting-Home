@@ -4,26 +4,42 @@
   "tile_size": 32,
   "width_tiles": 30,
   "height_tiles": 17,
-  "route": [[4, 0], [7, 2], [12, 4], [16, 4], [18, 2], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [23, 0]],
+  "route": [
+    [6, 0],
+    [7, 1],
+    [8, 2],
+    [9, 3],
+    [10, 3],
+    [11, 3],
+    [12, 3],
+    [13, 3],
+    [14, 2],
+    [15, 1],
+    [16, 0]
+  ],
   "enemy_gap_steps": 2,
   "hero_step_interval_s": 0.22,
   "objects": [
-    { "kind": "floor", "x": 1, "y": 0, "w_tiles": 8, "h_tiles": 1 },
-    { "kind": "breakable_floor", "x": 11, "y": 0, "w_tiles": 7, "h_tiles": 1 },
-    { "kind": "floor", "x": 19, "y": 0, "w_tiles": 8, "h_tiles": 1 },
+    { "kind": "floor", "x": 0, "y": 0, "w_tiles": 10, "h_tiles": 1 },
+    { "kind": "floor", "x": 14, "y": 0, "w_tiles": 16, "h_tiles": 1 },
 
-    { "kind": "floor", "x": 8, "y": 4, "w_tiles": 13, "h_tiles": 1 },
-    { "kind": "floor", "x": 6, "y": 2, "w_tiles": 3, "h_tiles": 1 },
-    { "kind": "floor", "x": 17, "y": 2, "w_tiles": 4, "h_tiles": 1 },
+    { "kind": "floor", "x": 6, "y": 1, "w_tiles": 3, "h_tiles": 1 },
+    { "kind": "floor", "x": 7, "y": 2, "w_tiles": 3, "h_tiles": 1 },
 
-    { "kind": "player_spawn", "x": 4, "y": 1 },
-    { "kind": "hero_spawn", "x": 4, "y": 1 },
-    { "kind": "enemy_spawn", "x": 4, "y": 1 },
-    { "kind": "exit_spawn", "x": 23, "y": 1 },
+    { "kind": "floor", "x": 9, "y": 3, "w_tiles": 2, "h_tiles": 1 },
+    { "kind": "breakable_floor", "x": 11, "y": 3, "w_tiles": 2, "h_tiles": 1 },
+    { "kind": "floor", "x": 13, "y": 3, "w_tiles": 2, "h_tiles": 1 },
 
-    { "kind": "fire_spawn", "x": 12, "y": 4 },
-    { "kind": "fire_spawn", "x": 16, "y": 4 },
-    { "kind": "fire_spawn", "x": 18, "y": 2 }
+    { "kind": "floor", "x": 13, "y": 2, "w_tiles": 3, "h_tiles": 1 },
+    { "kind": "floor", "x": 14, "y": 1, "w_tiles": 2, "h_tiles": 1 },
+
+    { "kind": "player_spawn", "x": 6, "y": 1 },
+    { "kind": "hero_spawn", "x": 6, "y": 1 },
+    { "kind": "enemy_spawn", "x": 6, "y": 1 },
+    { "kind": "exit_spawn", "x": 16, "y": 1 },
+
+    { "kind": "fire_spawn", "x": 10, "y": 4 },
+    { "kind": "fire_spawn", "x": 14, "y": 4 }
   ]
 }
 
