@@ -158,13 +158,12 @@ class GameApp:
         end_index = len(self.route_internal) - 1
         t = now - self.start_time
 
-        hero_step_index = min(int(t / self.hero_step_interval_s), end_index)
-
-        # Enemy follows the same path but lags behind until the hero reaches the end.
-        if hero_step_index < end_index:
-            enemy_step_index = max(0, hero_step_index - self.enemy_gap_steps)
-        else:
-            enemy_step_index = end_index
+        # Enemy leads; hero follows.
+        # With this prototype route stepping, the "one tile to the left" relationship
+        # is represented as "hero is 1 route-step behind the enemy".
+        hero_follow_gap_steps = 1
+        enemy_step_index = min(int(t / self.hero_step_interval_s), end_index)
+        hero_step_index = max(0, enemy_step_index - hero_follow_gap_steps)
 
         # Apply tile-by-tile destruction/fire when hero advances.
         if hero_step_index > self.hero_last_step_index:
@@ -185,8 +184,9 @@ class GameApp:
             enemy_tile_x, enemy_tile_y = self.route_internal[enemy_step_index]
             self._set_actor_to_tile(self.enemy, enemy_tile_x, enemy_tile_y)
 
-        # Combat only happens at the end-of-route (the "exit" for the hero).
-        if hero_step_index == end_index and not self.phase.enemy_dead:
+        # Combat only happens when the hero reaches its final tile (2 tiles left of the exit).
+        hero_final_index = max(0, end_index - hero_follow_gap_steps)
+        if hero_step_index == hero_final_index and not self.phase.enemy_dead:
             if self.enemy.alive and now >= self.next_attack_at:
                 self.hero.attacking_until = now + 0.15
                 self.enemy.take_damage(self.DAMAGE)
@@ -199,8 +199,10 @@ class GameApp:
         if self.phase.enemy_dead and not self.phase.hero_left:
             # Process the end tile once when hero begins retreating.
             if not self.end_tile_processed:
-                end_tile_x, end_tile_y = self.route_internal[end_index]
-                self._destroy_and_spawn_from_tile(end_tile_x, end_tile_y, now)
+                # Now that the hero follows after the enemy, we want to process the
+                # tile the hero is standing on (its final tile), not the enemy's tile.
+                hero_final_x, hero_final_y = self.route_internal[end_index - hero_follow_gap_steps]
+                self._destroy_and_spawn_from_tile(hero_final_x, hero_final_y, now)
                 self.end_tile_processed = True
 
             self.hero.rect.x += int(520 * dt)

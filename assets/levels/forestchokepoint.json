@@ -15,7 +15,15 @@
     [16, 3],
     [16, 2],
     [18, 1],
-    [20, 0]
+    [20, 0],
+    [21, 0],
+    [22, 0],
+    [23, 0],
+    [24, 0],
+    [25, 0],
+    [26, 0],
+    [27, 0],
+    [28, 0]
   ],
   "enemy_gap_steps": 2,
   "hero_step_interval_s": 0.22,
@@ -36,7 +44,7 @@
     { "kind": "player_spawn", "x": 4, "y": 1 },
     { "kind": "hero_spawn", "x": 4, "y": 1 },
     { "kind": "enemy_spawn", "x": 4, "y": 1 },
-    { "kind": "exit_spawn", "x": 20, "y": 1 },
+    { "kind": "exit_spawn", "x": 29, "y": 1 },
 
     { "kind": "fire_spawn", "x": 10, "y": 4 },
     { "kind": "fire_spawn", "x": 16, "y": 4 }
