@@ -9,6 +9,8 @@ from .entities import Actor, FirePatch, InputState, Player
 from .levels import LevelDef, get_level
 from .tilemap import TileMap
 
+LEVEL_SEQUENCE = ["market", "bridge", "forestchokepoint", "burninghearthrun"]
+
 
 @dataclass
 class GamePhase:
@@ -23,7 +25,12 @@ class GameApp:
         self.width = width
         self.height = height
         self.smoke_test = smoke_test
-        self.level_name = level_name
+        normalized = level_name.lower().strip()
+        if normalized not in LEVEL_SEQUENCE:
+            raise ValueError(f"Unknown/unsupported level '{level_name}'. Start one of: {', '.join(LEVEL_SEQUENCE)}")
+        self.level_order = LEVEL_SEQUENCE
+        self.level_index = self.level_order.index(normalized)
+        self.level_name = self.level_order[self.level_index]
 
         pygame.init()
         pygame.display.set_caption("Just Getting Home")
@@ -31,7 +38,7 @@ class GameApp:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 26)
 
-        self.level_def: LevelDef = get_level(level_name)
+        self.level_def: LevelDef = get_level(self.level_name)
         self._load_level()
 
     def _load_level(self) -> None:
@@ -154,6 +161,15 @@ class GameApp:
 
         # Win condition: exit is only “safe” after hero leaves.
         if self.phase.hero_left and self.player.rect.colliderect(self.exit_rect):
+            # Not final: immediately load the next level.
+            if self.level_index < len(self.level_order) - 1:
+                self.level_index += 1
+                self.level_name = self.level_order[self.level_index]
+                self.level_def = get_level(self.level_name)
+                self._load_level()
+                return
+
+            # Final level: show win message and stop advancing.
             self.phase.won = True
 
     def _render(self, now: float) -> None:
