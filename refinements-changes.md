@@ -16,6 +16,7 @@
   - broken areas spawn temporary hazard patches (fire)
   - after the hero retreats off-screen, the exit becomes reachable
 - Added missing Day 2 draft ASCII layout sketches for `ForestChokePoint` and `BurningHearthRun` in `plan.md` (text-only, before full implementation).
+- Added `forestchokepoint` and `burninghearthrun` level ASCII maps to `src/levels.py` (prototype implementation).
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
