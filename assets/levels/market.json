@@ -4,28 +4,26 @@
   "tile_size": 32,
   "width_tiles": 30,
   "height_tiles": 17,
-  "route": [[3, 0], [6, 2], [9, 4], [12, 6], [15, 8], [18, 10], [23, 12]],
+  "route": [[4, 0], [6, 2], [10, 4], [14, 4], [18, 2], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [18, 0], [22, 0]],
   "enemy_gap_steps": 2,
+  "hero_step_interval_s": 0.22,
   "objects": [
-    { "kind": "floor", "x": 3, "y": 0, "w_tiles": 1, "h_tiles": 1 },
+    { "kind": "floor", "x": 2, "y": 0, "w_tiles": 8, "h_tiles": 1 },
+    { "kind": "breakable_floor", "x": 12, "y": 0, "w_tiles": 7, "h_tiles": 1 },
+    { "kind": "floor", "x": 20, "y": 0, "w_tiles": 8, "h_tiles": 1 },
 
-    { "kind": "breakable_floor", "x": 6, "y": 2, "w_tiles": 1, "h_tiles": 1 },
-    { "kind": "floor", "x": 9, "y": 4, "w_tiles": 1, "h_tiles": 1 },
+    { "kind": "floor", "x": 8, "y": 4, "w_tiles": 13, "h_tiles": 1 },
+    { "kind": "floor", "x": 6, "y": 2, "w_tiles": 3, "h_tiles": 1 },
+    { "kind": "floor", "x": 18, "y": 2, "w_tiles": 3, "h_tiles": 1 },
 
-    { "kind": "breakable_floor", "x": 12, "y": 6, "w_tiles": 1, "h_tiles": 1 },
-    { "kind": "floor", "x": 15, "y": 8, "w_tiles": 1, "h_tiles": 1 },
+    { "kind": "player_spawn", "x": 4, "y": 1 },
+    { "kind": "hero_spawn", "x": 4, "y": 1 },
+    { "kind": "enemy_spawn", "x": 4, "y": 1 },
+    { "kind": "exit_spawn", "x": 22, "y": 1 },
 
-    { "kind": "breakable_floor", "x": 18, "y": 10, "w_tiles": 1, "h_tiles": 1 },
-    { "kind": "floor", "x": 23, "y": 12, "w_tiles": 1, "h_tiles": 1 },
-
-    { "kind": "player_spawn", "x": 3, "y": 1 },
-    { "kind": "hero_spawn", "x": 3, "y": 1 },
-    { "kind": "enemy_spawn", "x": 3, "y": 1 },
-    { "kind": "exit_spawn", "x": 23, "y": 13 },
-
-    { "kind": "fire_spawn", "x": 6, "y": 3 },
-    { "kind": "fire_spawn", "x": 12, "y": 7 },
-    { "kind": "fire_spawn", "x": 18, "y": 11 }
+    { "kind": "fire_spawn", "x": 10, "y": 4 },
+    { "kind": "fire_spawn", "x": 14, "y": 4 },
+    { "kind": "fire_spawn", "x": 18, "y": 2 }
   ]
 }
 

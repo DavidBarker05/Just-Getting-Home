@@ -75,6 +75,7 @@ class GameApp:
             raise ValueError(f"Level '{self.level_name}' route is empty.")
 
         self.hero_last_step_index = 0
+        self.end_tile_processed = False
         self.start_time = pygame.time.get_ticks() / 1000.0
 
         # Combat tuning (prototype feel).
@@ -130,11 +131,8 @@ class GameApp:
         # Break tiles.
         self.tilemap.destroy_breakable_tile(prev_tile_x, prev_tile_y)
 
-        # Fire: `fire_spawn` markers are stored as cells above a floor tile.
-        # Because internal coords use top-left origin, the "cell above" is at y-1.
-        fire_cell = (prev_tile_x, prev_tile_y - 1)
-        if fire_cell[1] < 0:
-            return
+        # Fire: `fire_spawn` markers correspond directly to the floor tile (not above it).
+        fire_cell = (prev_tile_x, prev_tile_y)
         if fire_cell not in self.tilemap.fire_cells:
             return
         if fire_cell in self.activated_fire_cells:
@@ -192,6 +190,12 @@ class GameApp:
 
         # After defeating the enemy, the hero retreats off-screen.
         if self.phase.enemy_dead and not self.phase.hero_left:
+            # Process the end tile once when hero begins retreating.
+            if not self.end_tile_processed:
+                end_tile_x, end_tile_y = self.route_internal[end_index]
+                self._destroy_and_spawn_from_tile(end_tile_x, end_tile_y, now)
+                self.end_tile_processed = True
+
             self.hero.rect.x += int(520 * dt)
             if self.hero.rect.left > self.tilemap.width_px() + 80:
                 self.phase.hero_left = True
