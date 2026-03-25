@@ -4,7 +4,7 @@ from typing import Any
 
 import pygame
 
-from .config import FIRE_H, FIRE_W, TILE_SIZE
+from .config import FIRE_H, FIRE_W, PLAYER_H, PLAYER_W, TILE_SIZE
 from .levels import LevelDef
 
 
@@ -26,6 +26,29 @@ class TileMap:
     def height_px(self) -> int:
         return self.height_tiles * self.tile_size
 
+    def _player_spawn_from_cell(self, cell_x: int, cell_y: int) -> tuple[int, int]:
+        # Spawn marker is conceptually placed in an empty cell directly above the floor.
+        x = cell_x * self.tile_size + (self.tile_size - PLAYER_W) // 2
+        y = (cell_y + 1) * self.tile_size - PLAYER_H
+        return x, y
+
+    def _exit_spawn_from_cell(self, cell_x: int, cell_y: int) -> tuple[int, int]:
+        x = cell_x * self.tile_size + (self.tile_size - PLAYER_W) // 2
+        y = (cell_y + 1) * self.tile_size - (PLAYER_H // 2)
+        return x, y
+
+    def _actor_spawn_from_cell(self, cell_x: int, cell_y: int) -> tuple[int, int]:
+        w = 18
+        h = 30
+        x = cell_x * self.tile_size + (self.tile_size - w) // 2
+        y = (cell_y + 1) * self.tile_size - h
+        return x, y
+
+    def _fire_spawn_rect_from_cell(self, cell_x: int, cell_y: int) -> pygame.Rect:
+        x = cell_x * self.tile_size + (self.tile_size - FIRE_W) // 2
+        y = (cell_y + 1) * self.tile_size - FIRE_H
+        return pygame.Rect(x, y, FIRE_W, FIRE_H)
+
     def _parse_objects(self, objects: list[dict[str, Any]]) -> Any:
         required = {
             "player_spawn": None,
@@ -35,35 +58,41 @@ class TileMap:
         }
         hazard_rects: list[pygame.Rect] = []
 
-        # Solid placements are tile-aligned via x/y pixel coords.
+        # JSON schema:
+        # - floor/breakable_floor: x/y are *tile coords* of the floor tiles themselves
+        # - spawn/hazard markers: x/y are the marker *cell* directly above the floor
         for obj in objects:
             kind = str(obj.get("kind") or "").strip().lower()
             if not kind:
                 continue
 
             if kind in ("floor", "breakable_floor"):
-                x_px = int(obj["x"])
-                y_px = int(obj["y"])
+                x_tile = int(obj["x"])
+                y_tile = int(obj["y"])
                 w_tiles = int(obj["w_tiles"])
                 h_tiles = int(obj["h_tiles"])
 
-                gx0 = x_px // self.tile_size
-                gy0 = y_px // self.tile_size
-
-                for gy in range(gy0, gy0 + h_tiles):
-                    for gx in range(gx0, gx0 + w_tiles):
+                for gy in range(y_tile, y_tile + h_tiles):
+                    for gx in range(x_tile, x_tile + w_tiles):
                         self.solid_tiles.add((gx, gy))
                         if kind == "breakable_floor":
                             self.breakable_tiles.add((gx, gy))
 
             elif kind in required:
-                required[kind] = (int(obj["x"]), int(obj["y"]))
+                cell_x = int(obj["x"])
+                cell_y = int(obj["y"])
+                if kind == "player_spawn":
+                    required[kind] = self._player_spawn_from_cell(cell_x, cell_y)
+                elif kind == "exit_spawn":
+                    required[kind] = self._exit_spawn_from_cell(cell_x, cell_y)
+                elif kind == "hero_spawn":
+                    required[kind] = self._actor_spawn_from_cell(cell_x, cell_y)
+                elif kind == "enemy_spawn":
+                    required[kind] = self._actor_spawn_from_cell(cell_x, cell_y)
             elif kind == "fire_spawn":
-                x = int(obj["x"])
-                y = int(obj["y"])
-                w = int(obj.get("w_px") or FIRE_W)
-                h = int(obj.get("h_px") or FIRE_H)
-                hazard_rects.append(pygame.Rect(x, y, w, h))
+                cell_x = int(obj["x"])
+                cell_y = int(obj["y"])
+                hazard_rects.append(self._fire_spawn_rect_from_cell(cell_x, cell_y))
 
         missing = [k for k, v in required.items() if v is None]
         if missing:
