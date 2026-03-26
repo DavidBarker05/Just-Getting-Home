@@ -46,6 +46,8 @@
 - Adjusted final-level house placement so its bottom-left aligns with the end platform (not buried in ground).
 - Added a start screen with buttons for Start Game, Controls, and Quit (plus a controls screen/back flow).
 - Controls screen now shows debug controls only in Python runs (hidden in packaged build).
+- Added story text screens before each level, after pressing Start, and at game end (with wrapped text + configurable copy in `assets/story/story.json`).
+- Fixed story-screen timing: gameplay simulation now stays paused until the player clicks Begin/Continue.
 
 ## Personal Human-Made Refinements
 ### Day 1

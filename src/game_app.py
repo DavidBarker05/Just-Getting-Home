@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 import sys
 from pathlib import Path
 
@@ -58,6 +59,9 @@ class GameApp:
         # UI flow: menu -> controls -> game.
         # Smoke test skips menu so CI/sanity runs don't wait for clicks.
         self.ui_screen = "game" if smoke_test else "menu"
+        self.story_key: str | None = None
+        self.story_button_label = "Continue"
+        self.story_data = self._load_story_data()
 
         self.level_def: LevelDef = get_level(self.level_name)
         self._load_level()
@@ -208,8 +212,9 @@ class GameApp:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 # ESC in menu/controls exits the game quickly.
                 return False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                self.ui_screen = "game"
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN and self.ui_screen == "menu":
+                self._restart_game()
+                self._open_story_for_current_level(initial=True)
                 return True
             if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
                 self.ui_screen = "controls"
@@ -217,9 +222,13 @@ class GameApp:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_b and self.ui_screen == "controls":
                 self.ui_screen = "menu"
                 return True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN and self.ui_screen == "story":
+                self.ui_screen = "game"
+                return True
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.ui_screen == "menu":
                 if buttons["start"].collidepoint(event.pos):
-                    self.ui_screen = "game"
+                    self._restart_game()
+                    self._open_story_for_current_level(initial=True)
                     return True
                 if buttons["controls"].collidepoint(event.pos):
                     self.ui_screen = "controls"
@@ -229,6 +238,18 @@ class GameApp:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.ui_screen == "controls":
                 self.ui_screen = "menu"
                 return True
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.ui_screen == "story":
+                if self._story_continue_button_rect().collidepoint(event.pos):
+                    self.ui_screen = "game"
+                    return True
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.ui_screen == "ending":
+                end_buttons = self._ending_button_rects()
+                if end_buttons["menu"].collidepoint(event.pos):
+                    self._restart_game()
+                    self.ui_screen = "menu"
+                    return True
+                if end_buttons["quit"].collidepoint(event.pos):
+                    return False
         return True
 
     def _set_actor_to_tile(self, actor: Actor, tile_x: int, tile_y: int) -> None:
@@ -383,9 +404,12 @@ class GameApp:
                 self.level_name = self.level_order[self.level_index]
                 self.level_def = get_level(self.level_name)
                 self._load_level()
+                self._open_story_for_current_level(initial=False)
                 return
 
             self.phase.won = True
+            self.story_key = "ending"
+            self.ui_screen = "ending"
 
     def _render(self, now: float) -> None:
         self.screen.fill(self.level_def.palette_bg)
@@ -511,6 +535,76 @@ class GameApp:
         y = rect.y + (rect.height - surf.get_height()) // 2
         self.screen.blit(surf, (x, y))
 
+    def _story_panel_rect(self) -> pygame.Rect:
+        panel_w = min(820, self.width - 80)
+        panel_h = min(420, self.height - 120)
+        return pygame.Rect((self.width - panel_w) // 2, (self.height - panel_h) // 2, panel_w, panel_h)
+
+    def _story_continue_button_rect(self) -> pygame.Rect:
+        panel = self._story_panel_rect()
+        btn_w = 220
+        btn_h = 52
+        return pygame.Rect(panel.centerx - btn_w // 2, panel.bottom - btn_h - 22, btn_w, btn_h)
+
+    def _ending_button_rects(self) -> dict[str, pygame.Rect]:
+        panel = self._story_panel_rect()
+        btn_w = 220
+        btn_h = 52
+        gap = 24
+        total_w = btn_w * 2 + gap
+        start_x = panel.centerx - total_w // 2
+        y = panel.bottom - btn_h - 22
+        return {
+            "menu": pygame.Rect(start_x, y, btn_w, btn_h),
+            "quit": pygame.Rect(start_x + btn_w + gap, y, btn_w, btn_h),
+        }
+
+    def _wrap_text(self, text: str, max_width: int) -> list[str]:
+        wrapped: list[str] = []
+        for paragraph in text.split("\n"):
+            words = paragraph.split()
+            if not words:
+                wrapped.append("")
+                continue
+            line = words[0]
+            for word in words[1:]:
+                trial = f"{line} {word}"
+                if self.font.size(trial)[0] <= max_width:
+                    line = trial
+                else:
+                    wrapped.append(line)
+                    line = word
+            wrapped.append(line)
+        return wrapped
+
+    def _load_story_data(self) -> dict[str, str]:
+        story_path = Path(__file__).resolve().parent.parent / "assets" / "story" / "story.json"
+        defaults = {
+            "before_market": "You set off from the market. Stay out of the hero's way and survive the chaos.",
+            "before_bridge": "The bridge route is unstable after the last clash. Keep moving and avoid the flames.",
+            "before_forestchokepoint": "The forest narrows ahead. The hero's path leaves danger behind for you.",
+            "before_burninghearthrun": "Home is close now. One last battle stands between you and safety.",
+            "ending": "You finally make it home... only to find the hero's final battle has destroyed it.",
+        }
+        try:
+            if not story_path.exists():
+                return defaults
+            data = json.loads(story_path.read_text(encoding="utf-8"))
+            if not isinstance(data, dict):
+                return defaults
+            merged = defaults.copy()
+            for key, value in data.items():
+                if isinstance(value, str) and value.strip():
+                    merged[str(key)] = value
+            return merged
+        except Exception:
+            return defaults
+
+    def _open_story_for_current_level(self, initial: bool) -> None:
+        self.story_key = f"before_{self.level_name}"
+        self.story_button_label = "Begin Level" if initial else "Continue"
+        self.ui_screen = "story"
+
     def _render_menu(self) -> None:
         self.screen.fill((18, 22, 30))
         title_font = pygame.font.SysFont(None, 64)
@@ -550,6 +644,39 @@ class GameApp:
             y += 34
         pygame.display.flip()
 
+    def _render_story(self, ending: bool = False) -> None:
+        self.screen.fill((18, 22, 30))
+        panel = self._story_panel_rect()
+        pygame.draw.rect(self.screen, (42, 52, 68), panel, border_radius=10)
+        pygame.draw.rect(self.screen, (20, 28, 40), panel, width=2, border_radius=10)
+
+        title_font = pygame.font.SysFont(None, 50)
+        title_text = "The End" if ending else "Story"
+        title = title_font.render(title_text, True, (240, 236, 215))
+        self.screen.blit(title, (panel.centerx - title.get_width() // 2, panel.y + 18))
+
+        story_text = self.story_data.get(self.story_key or "", "")
+        text_x = panel.x + 26
+        text_y = panel.y + 86
+        text_max_w = panel.width - 52
+        for line in self._wrap_text(story_text, text_max_w):
+            surf = self.font.render(line, True, (230, 232, 238))
+            self.screen.blit(surf, (text_x, text_y))
+            text_y += 30
+
+        mouse_pos = pygame.mouse.get_pos()
+        if ending:
+            btns = self._ending_button_rects()
+            self._draw_menu_button(btns["menu"], "Return To Menu", btns["menu"].collidepoint(mouse_pos))
+            self._draw_menu_button(btns["quit"], "Quit Game", btns["quit"].collidepoint(mouse_pos))
+        else:
+            continue_rect = self._story_continue_button_rect()
+            self._draw_menu_button(
+                continue_rect, self.story_button_label, continue_rect.collidepoint(mouse_pos)
+            )
+
+        pygame.display.flip()
+
     def _update_caption(self) -> None:
         if not (self.debug_enabled and self.debug_show_fps):
             pygame.display.set_caption("Just Getting Home")
@@ -568,11 +695,12 @@ class GameApp:
 
     def run(self) -> int:
         running = True
-        smoke_start = self.sim_time
+        smoke_elapsed = 0.0
 
         while running:
             raw_dt = self.clock.tick(SCREEN_FPS) / 1000.0
             raw_dt = min(1.0 / 30.0, raw_dt)
+            smoke_elapsed += raw_dt
 
             if self.ui_screen != "game":
                 running = self._process_menu_events()
@@ -580,11 +708,16 @@ class GameApp:
                     break
                 if self.ui_screen == "controls":
                     self._render_controls()
+                elif self.ui_screen == "story":
+                    self._render_story(ending=False)
+                elif self.ui_screen == "ending":
+                    self._render_story(ending=True)
                 else:
                     self._render_menu()
-                if self.smoke_test and self.sim_time - smoke_start >= 1.5:
+                # Keep simulation frozen while UI/story screens are open.
+                # Gameplay time must not advance until "Begin Level"/"Continue" is pressed.
+                if self.smoke_test and smoke_elapsed >= 1.5:
                     running = False
-                self.sim_time += raw_dt
                 continue
 
             self._jump_pressed = False
@@ -616,7 +749,7 @@ class GameApp:
 
             self._update_caption()
 
-            if self.smoke_test and now - smoke_start >= 1.5:
+            if self.smoke_test and smoke_elapsed >= 1.5:
                 running = False
 
         pygame.quit()
