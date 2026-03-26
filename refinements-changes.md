@@ -50,6 +50,7 @@
 - Fixed story-screen timing: gameplay simulation now stays paused until the player clicks Begin/Continue.
 - Build packaging updated: include `assets/story/story.json` in the PyInstaller bundle.
 - Updated CLI help text for `--level` to list all supported levels.
+- Removed old placeholder sections (`Running notes` and `Open questions`) now that Day 3 decisions are finalized.
 
 ## Personal Human-Made Refinements
 ### Day 1
@@ -67,12 +68,4 @@
 - Changed the story messages to my own story messages to better match my original idea
 - Fixed spelling and grammar in the story
 
-## Running notes (updates later)
-- Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
-- Asset generation (pixel art) will happen later using ChatGPT/DALL-E outputs where appropriate.
-- Packaging will be validated after Day 2 code exists, so Day 3 can bundle assets reliably.
-
-## Open questions
-- Exact tile size / resolution for the pixel art (tentative: 16x16 or 24x24 tiles).
-- Whether to hardcode levels as simple ASCII maps first, or use a tiny JSON tilemap format.
 
