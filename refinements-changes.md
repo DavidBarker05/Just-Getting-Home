@@ -62,6 +62,7 @@
 - Added in sprites for player, hero and enemy
 - Added in sprites for house and destroyed house
 - Adjusted house position, exit position, and where the hero and enemy stop on the burninghearthrun level
+- Changed the story messages to my own story messages to better match my original idea
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
