@@ -48,6 +48,8 @@
 - Controls screen now shows debug controls only in Python runs (hidden in packaged build).
 - Added story text screens before each level, after pressing Start, and at game end (with wrapped text + configurable copy in `assets/story/story.json`).
 - Fixed story-screen timing: gameplay simulation now stays paused until the player clicks Begin/Continue.
+- Build packaging updated: include `assets/story/story.json` in the PyInstaller bundle.
+- Updated CLI help text for `--level` to list all supported levels.
 
 ## Personal Human-Made Refinements
 ### Day 1

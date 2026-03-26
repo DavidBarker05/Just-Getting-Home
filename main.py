@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from src.game_app import GameApp
+from src.game_app import GameApp, LEVEL_SEQUENCE
 
 
 def parse_args() -> argparse.Namespace:
@@ -11,7 +11,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Run briefly and exit (useful for CI/sanity checks).",
     )
-    parser.add_argument("--level", type=str, default="market", help="Level name: market or bridge.")
+    parser.add_argument(
+        "--level",
+        type=str,
+        default="market",
+        help=f"Level name: {', '.join(LEVEL_SEQUENCE)}.",
+    )
     parser.add_argument("--width", type=int, default=960)
     parser.add_argument("--height", type=int, default=544)
     return parser.parse_args()
