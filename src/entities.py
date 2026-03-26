@@ -16,11 +16,20 @@ class InputState:
 
 
 class Player:
-    def __init__(self, x: float, y: float, w: int = PLAYER_W, h: int = PLAYER_H) -> None:
+    def __init__(
+        self,
+        x: float,
+        y: float,
+        w: int = PLAYER_W,
+        h: int = PLAYER_H,
+        sprite_surface: pygame.Surface | None = None,
+    ) -> None:
         self.rect = pygame.Rect(int(x), int(y), w, h)
         self.vel_x = 0.0
         self.vel_y = 0.0
         self.on_ground = False
+        # If set, GameApp will render this surface instead of the default rect.
+        self.sprite_surface = sprite_surface
         # Jump quality-of-life:
         # - jump_buffer: allows a jump press shortly before landing
         # - coyote_time: allows a jump shortly after leaving the ground
@@ -94,12 +103,20 @@ class Player:
 
 
 class Actor:
-    def __init__(self, x: float, y: float, color_idle: tuple[int, int, int], color_attack: tuple[int, int, int]) -> None:
+    def __init__(
+        self,
+        x: float,
+        y: float,
+        color_idle: tuple[int, int, int],
+        color_attack: tuple[int, int, int],
+        sprite_surface: pygame.Surface | None = None,
+    ) -> None:
         w = 18
         h = 30
         self.rect = pygame.Rect(int(x), int(y), w, h)
         self.color_idle = color_idle
         self.color_attack = color_attack
+        self.sprite_surface = sprite_surface
         self.hp = 100
         self.attacking_until = 0.0
 
@@ -111,6 +128,16 @@ class Actor:
         return self.hp > 0
 
     def draw(self, screen: pygame.Surface, now: float) -> None:
+        if self.sprite_surface is not None:
+            # Draw the sprite scaled to the actor rect, then tint during attack.
+            screen.blit(pygame.transform.smoothscale(self.sprite_surface, self.rect.size), self.rect.topleft)
+            if now < self.attacking_until:
+                overlay = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+                # Semi-transparent tint so the sprite still reads through.
+                overlay.fill((*self.color_attack, 120))
+                screen.blit(overlay, self.rect.topleft)
+            return
+
         color = self.color_idle
         if now < self.attacking_until:
             color = self.color_attack
@@ -125,10 +152,12 @@ class FirePatch:
         w: int = FIRE_W,
         h: int = FIRE_H,
         duration: float | None = None,
+        sprite_surface: pygame.Surface | None = None,
     ) -> None:
         self.rect = pygame.Rect(int(x), int(y), w, h)
         self.duration = duration
         self.active = True
+        self.sprite_surface = sprite_surface
         # If duration is None, the hazard is permanent.
         self.expires_at: float | None = None
 
@@ -153,6 +182,10 @@ class FirePatch:
 
     def draw(self, screen: pygame.Surface) -> None:
         if self.active:
+            if self.sprite_surface is not None:
+                screen.blit(pygame.transform.smoothscale(self.sprite_surface, self.rect.size), self.rect.topleft)
+                return
+
             pygame.draw.rect(screen, (235, 120, 40), self.rect, border_radius=2)
             pygame.draw.rect(screen, (255, 180, 70), self.rect, width=2, border_radius=2)
 

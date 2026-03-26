@@ -34,31 +34,31 @@
   ],
   "hero_step_interval_s": 0.22,
   "objects": [
-    { "kind": "floor", "x": 0, "y": 0, "w_tiles": 6, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "", "x": 0, "y": 0, "w_tiles": 6, "h_tiles": 1 },
 
-    { "kind": "floor", "x": 6, "y": 0, "w_tiles": 7, "h_tiles": 1 },
-    { "kind": "floor", "x": 6, "y": 1, "w_tiles": 7, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "", "x": 6, "y": 0, "w_tiles": 7, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "", "x": 6, "y": 1, "w_tiles": 7, "h_tiles": 1 },
 
-    { "kind": "floor", "x": 13, "y": 0, "w_tiles": 8, "h_tiles": 2 },
-    { "kind": "floor", "x": 13, "y": 2, "w_tiles": 8, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "", "x": 13, "y": 0, "w_tiles": 8, "h_tiles": 2 },
+    { "kind": "floor", "sprite": "", "x": 13, "y": 2, "w_tiles": 8, "h_tiles": 1 },
 
-    { "kind": "floor", "x": 21, "y": 0, "w_tiles": 9, "h_tiles": 3 },
-    { "kind": "floor", "x": 21, "y": 3, "w_tiles": 9, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "", "x": 21, "y": 0, "w_tiles": 9, "h_tiles": 3 },
+    { "kind": "floor", "sprite": "", "x": 21, "y": 3, "w_tiles": 9, "h_tiles": 1 },
 
-    { "kind": "player_spawn", "x": 0, "y": 1 },
-    { "kind": "hero_spawn", "x": 3, "y": 1 },
-    { "kind": "enemy_spawn", "x": 3, "y": 1 },
-    { "kind": "exit_spawn", "x": 29, "y": 4 },
+    { "kind": "player_spawn", "sprite": "", "x": 0, "y": 1 },
+    { "kind": "hero_spawn", "sprite": "", "x": 3, "y": 1 },
+    { "kind": "enemy_spawn", "sprite": "", "x": 3, "y": 1 },
+    { "kind": "exit_spawn", "sprite": "", "x": 29, "y": 4 },
 
-    { "kind": "fire_spawn", "x": 8, "y": 2 },
-    { "kind": "fire_spawn", "x": 9, "y": 2 },
-    { "kind": "fire_spawn", "x": 10, "y": 2 },
+    { "kind": "fire_spawn", "sprite": "", "x": 8, "y": 2 },
+    { "kind": "fire_spawn", "sprite": "", "x": 9, "y": 2 },
+    { "kind": "fire_spawn", "sprite": "", "x": 10, "y": 2 },
 
-    { "kind": "fire_spawn", "x": 14, "y": 3 },
-    { "kind": "fire_spawn", "x": 15, "y": 3 },
+    { "kind": "fire_spawn", "sprite": "", "x": 14, "y": 3 },
+    { "kind": "fire_spawn", "sprite": "", "x": 15, "y": 3 },
 
-    { "kind": "fire_spawn", "x": 18, "y": 3 },
-    { "kind": "fire_spawn", "x": 19, "y": 3 }
+    { "kind": "fire_spawn", "sprite": "", "x": 18, "y": 3 },
+    { "kind": "fire_spawn", "sprite": "", "x": 19, "y": 3 }
   ]
 }
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import sys
+from pathlib import Path
 
 import pygame
 
@@ -40,6 +41,7 @@ class GameApp:
         self.screen = pygame.display.set_mode((width, height))
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 26)
+        self._sprite_cache: dict[str, pygame.Surface | None] = {}
         # Single simulation clock used by gameplay and debug pause/step.
         self.sim_time = 0.0
 
@@ -61,10 +63,12 @@ class GameApp:
         self.phase = GamePhase()
 
         psx, psy = self.tilemap.spawns.player_spawn
-        self.player = Player(psx, psy)
+        self.player_sprite_surface = self._sprite_surface_or_none(getattr(self.tilemap.spawns, "player_sprite", None))
+        self.player = Player(psx, psy, sprite_surface=self.player_sprite_surface)
 
         ex, ey = self.tilemap.spawns.exit_spawn
         self.exit_rect = pygame.Rect(int(ex), int(ey), PLAYER_W, PLAYER_H)
+        self.exit_sprite_surface = self._sprite_surface_or_none(getattr(self.tilemap.spawns, "exit_sprite", None))
 
         # Permanent hazards.
         self.fire_patches: list[FirePatch] = []
@@ -109,10 +113,24 @@ class GameApp:
         # Start both at route[0]. Hero will lag 1 behind enemy.
         hero_tile = self.route_internal[0]
         hero_x, hero_y = tile_to_actor_pos(hero_tile[0], hero_tile[1])
-        self.hero = Actor(hero_x, hero_y, color_idle=(170, 60, 60), color_attack=(255, 110, 110))
+        self.hero_sprite_surface = self._sprite_surface_or_none(getattr(self.tilemap.spawns, "hero_sprite", None))
+        self.hero = Actor(
+            hero_x,
+            hero_y,
+            color_idle=(170, 60, 60),
+            color_attack=(255, 110, 110),
+            sprite_surface=self.hero_sprite_surface,
+        )
 
         enemy_x, enemy_y = tile_to_actor_pos(hero_tile[0], hero_tile[1])
-        self.enemy = Actor(enemy_x, enemy_y, color_idle=(60, 60, 60), color_attack=(110, 110, 110))
+        self.enemy_sprite_surface = self._sprite_surface_or_none(getattr(self.tilemap.spawns, "enemy_sprite", None))
+        self.enemy = Actor(
+            enemy_x,
+            enemy_y,
+            color_idle=(60, 60, 60),
+            color_attack=(110, 110, 110),
+            sprite_surface=self.enemy_sprite_surface,
+        )
 
     def _reset_level(self) -> None:
         self._load_level()
@@ -172,6 +190,30 @@ class GameApp:
         actor.rect.x = tile_x * self.tilemap.tile_size + (self.tilemap.tile_size - actor_w) // 2
         actor.rect.y = (tile_y + 1) * self.tilemap.tile_size - actor_h
 
+    def _sprite_surface_or_none(self, sprite_name: str | None) -> pygame.Surface | None:
+        """Load a sprite from `assets/sprites/<name>.png` with caching.
+
+        Empty/None sprite names mean "use the default shape rendering".
+        """
+        if not sprite_name:
+            return None
+        if sprite_name in self._sprite_cache:
+            return self._sprite_cache[sprite_name]
+
+        sprites_dir = Path(__file__).resolve().parent.parent / "assets" / "sprites"
+        sprite_path = sprites_dir / f"{sprite_name}.png"
+        try:
+            if not sprite_path.exists():
+                self._sprite_cache[sprite_name] = None
+                return None
+            surf = pygame.image.load(str(sprite_path)).convert_alpha()
+        except Exception:
+            self._sprite_cache[sprite_name] = None
+            return None
+
+        self._sprite_cache[sprite_name] = surf
+        return surf
+
     def _destroy_and_spawn_from_tile(self, prev_tile_x: int, prev_tile_y: int, now: float) -> None:
         # Route points currently represent the actor's step row (one cell above floor),
         # so convert to the actual floor tile before applying break/fire logic.
@@ -194,7 +236,9 @@ class GameApp:
             return
 
         rect = self.tilemap.fire_rect_from_cell(fire_cell[0], fire_cell[1])
-        patch = FirePatch(rect.x, rect.y, w=rect.width, h=rect.height, duration=None)
+        fire_sprite_name = self.tilemap.fire_sprites.get(fire_cell)
+        fire_sprite_surface = self._sprite_surface_or_none(fire_sprite_name)
+        patch = FirePatch(rect.x, rect.y, w=rect.width, h=rect.height, duration=None, sprite_surface=fire_sprite_surface)
         patch.start(now)
         self.fire_patches.append(patch)
         self.activated_fire_cells.add(fire_cell)
@@ -306,20 +350,39 @@ class GameApp:
                 self.tilemap.tile_size,
                 self.tilemap.tile_size,
             )
+            sprite_name = self.tilemap.tile_sprites.get((gx, gy))
+            if sprite_name:
+                surf = self._sprite_surface_or_none(sprite_name)
+                if surf is not None:
+                    self.screen.blit(pygame.transform.smoothscale(surf, r.size), r.topleft)
+                    continue
+
             is_breakable = (gx, gy) in self.tilemap.breakable_tiles
             pygame.draw.rect(self.screen, break_color if is_breakable else ground_color, r)
             pygame.draw.rect(self.screen, (70, 55, 40), r, width=1)
 
-        pygame.draw.rect(self.screen, (80, 200, 90), self.exit_rect, border_radius=4)
-        pygame.draw.rect(self.screen, (20, 100, 35), self.exit_rect, width=2, border_radius=4)
+        if self.exit_sprite_surface is not None:
+            self.screen.blit(
+                pygame.transform.smoothscale(self.exit_sprite_surface, self.exit_rect.size),
+                self.exit_rect.topleft,
+            )
+        else:
+            pygame.draw.rect(self.screen, (80, 200, 90), self.exit_rect, border_radius=4)
+            pygame.draw.rect(self.screen, (20, 100, 35), self.exit_rect, width=2, border_radius=4)
 
         for patch in self.fire_patches:
             patch.draw(self.screen)
 
         self.hero.draw(self.screen, now)
         self.enemy.draw(self.screen, now)
-        pygame.draw.rect(self.screen, (90, 170, 240), self.player.rect, border_radius=3)
-        pygame.draw.rect(self.screen, (30, 80, 140), self.player.rect, width=2, border_radius=3)
+        if self.player.sprite_surface is not None:
+            self.screen.blit(
+                pygame.transform.smoothscale(self.player.sprite_surface, self.player.rect.size),
+                self.player.rect.topleft,
+            )
+        else:
+            pygame.draw.rect(self.screen, (90, 170, 240), self.player.rect, border_radius=3)
+            pygame.draw.rect(self.screen, (30, 80, 140), self.player.rect, width=2, border_radius=3)
 
         if self.debug_enabled:
             self._render_debug_overlay()

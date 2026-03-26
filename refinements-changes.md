@@ -39,6 +39,7 @@
 
 ## Day 3 decisions
 - Clamp player to screen left/right bounds (no off-screen drift).
+- Add per-object `sprite` support to level JSONs (defaults to shapes when `sprite` is empty) and bundle `assets/sprites/`.
 
 ## Personal Human-Made Refinements
 ### Day 1

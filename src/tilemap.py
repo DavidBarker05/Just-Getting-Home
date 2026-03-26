@@ -18,6 +18,10 @@ class TileMap:
         self.solid_tiles: set[tuple[int, int]] = set()
         self.breakable_tiles: set[tuple[int, int]] = set()
         self.fire_cells: set[tuple[int, int]] = set()  # fire marker cells (empty cell above a floor tile)
+        # Optional sprite name per tile cell. Only populated when a non-empty sprite is provided.
+        self.tile_sprites: dict[tuple[int, int], str] = {}
+        # Optional sprite name per fire marker cell.
+        self.fire_sprites: dict[tuple[int, int], str] = {}
 
         self.spawns = self._parse_objects(level_def.objects)
 
@@ -59,6 +63,11 @@ class TileMap:
             "hero_spawn": None,
             "enemy_spawn": None,
         }
+        # Optional sprite names for spawns/actors/exit.
+        player_sprite: str | None = None
+        hero_sprite: str | None = None
+        enemy_sprite: str | None = None
+        exit_sprite: str | None = None
 
         # JSON schema (bottom-left origin):
         # - floor/breakable_floor: x/y are *tile coords* of the floor tiles themselves,
@@ -75,6 +84,9 @@ class TileMap:
                 y_tile = int(obj["y"])
                 w_tiles = int(obj["w_tiles"])
                 h_tiles = int(obj["h_tiles"])
+                sprite_name = str(obj.get("sprite") or "").strip()
+                if not sprite_name:
+                    sprite_name = None
 
                 # Convert from JSON bottom-left coords to internal top-left tile coords.
                 for gy_input in range(y_tile, y_tile + h_tiles):
@@ -83,19 +95,28 @@ class TileMap:
                         self.solid_tiles.add((gx, gy_internal))
                         if kind == "breakable_floor":
                             self.breakable_tiles.add((gx, gy_internal))
+                        if sprite_name is not None:
+                            self.tile_sprites[(gx, gy_internal)] = sprite_name
 
             elif kind in required:
                 cell_x = int(obj["x"])
                 cell_y_input = int(obj["y"])
                 cell_y_internal = (self.height_tiles - 1) - cell_y_input
+                sprite_name = str(obj.get("sprite") or "").strip()
+                if not sprite_name:
+                    sprite_name = None
                 if kind == "player_spawn":
                     required[kind] = self._player_spawn_from_cell(cell_x, cell_y_internal)
+                    player_sprite = sprite_name
                 elif kind == "exit_spawn":
                     required[kind] = self._exit_spawn_from_cell(cell_x, cell_y_internal)
+                    exit_sprite = sprite_name
                 elif kind == "hero_spawn":
                     required[kind] = self._actor_spawn_from_cell(cell_x, cell_y_internal)
+                    hero_sprite = sprite_name
                 elif kind == "enemy_spawn":
                     required[kind] = self._actor_spawn_from_cell(cell_x, cell_y_internal)
+                    enemy_sprite = sprite_name
             elif kind == "fire_spawn":
                 cell_x = int(obj["x"])
                 cell_y_input = int(obj["y"])
@@ -103,6 +124,9 @@ class TileMap:
                 # Fire spawns are stored as marker cells. We'll spawn permanent fire
                 # when the hero walks over the floor tile underneath them.
                 self.fire_cells.add((cell_x, cell_y_internal))
+                sprite_name = str(obj.get("sprite") or "").strip()
+                if sprite_name:
+                    self.fire_sprites[(cell_x, cell_y_internal)] = sprite_name
 
         missing = [k for k, v in required.items() if v is None]
         if missing:
@@ -117,6 +141,10 @@ class TileMap:
                 "exit_spawn": required["exit_spawn"],
                 "hero_spawn": required["hero_spawn"],
                 "enemy_spawn": required["enemy_spawn"],
+                "player_sprite": player_sprite,
+                "exit_sprite": exit_sprite,
+                "hero_sprite": hero_sprite,
+                "enemy_sprite": enemy_sprite,
             },
         )()
 
