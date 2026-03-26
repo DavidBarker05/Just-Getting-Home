@@ -55,6 +55,10 @@
 - Refined `plan.md` task list again to align with originally planned assignment tasks (removed later-added scope items like debug/menu/story from planned tasks).
 - Clarified `plan.md` Day 1 git milestone rationale: repository setup/push happened early to allow safe rollback from the start.
 - Restructured `plan.md` for clarity: moved AI tools to a project-wide section and nested each day's task list under that day's milestones.
+- Restructured `README.md` to match assignment requirements explicitly (Overview, Installation/Run instructions, Credits, AI tools used) and clarified Python `3.10+` with `3.13` recommended.
+- Updated `README.md` wording to state builds are in GitHub Releases and explicitly note ChatGPT/DALL-E were not used in final deliverables.
+- Refined `README.md` AI note to clarify ChatGPT/DALL-E were planned in `plan.md` but not used in final deliverables.
+- Updated `.gitignore` to stop ignoring `.spec` files so `JustGettingHome.spec` can be tracked for reproducible builds.
 
 ## Personal Human-Made Refinements
 ### Day 1

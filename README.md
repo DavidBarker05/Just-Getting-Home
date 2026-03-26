@@ -1,56 +1,82 @@
 # Just Getting Home
 
-2D platformer game jam project (theme: **You are not the main character**).
+## Overview
+Game jam project for the theme **"You are not the main character"**.
 
-## What’s the game about?
-You are an ordinary peasant trying to get home. You cross paths with the hero, who fights enemies. During those fights, the hero’s actions destroy the surroundings, turning your route into a dangerous obstacle course.
+You play as an ordinary peasant trying to get home while the hero fights enemies in front of you and leaves destruction behind.
 
-## Core gameplay loop (high level)
-1. You spawn in a level and observe the hero fighting.
-2. The fight creates hazards/obstacles in the environment.
-3. The hero goes off-screen after winning.
-4. You navigate through the newly-dangerous area to the level exit.
+Core loop:
+1. Player spawns and sees the hero/enemy fight sequence.
+2. The fight creates hazards and changes traversal.
+3. The hero leaves the area.
+4. The player crosses the damaged route and reaches the exit.
 
-## Requirements
-- Python `3.13`
-- Windows is the current target (game jam submission + PyInstaller)
+## Installation / Run Instructions
 
-## Setup
+### Requirements
+- Python `3.10+` (recommended: `3.13`, which was used for development and testing)
+- Windows target for executable packaging (PyInstaller)
 
-### 1) Create a virtual environment
-PowerShell (recommended):
+### Setup
+1) Create a virtual environment (PowerShell):
 ```powershell
 python -m venv .venv
 ```
 
-### 2) Activate it
+2) Activate it:
 ```powershell
-.venv\\Scripts\\Activate.ps1
+.venv\Scripts\Activate.ps1
 ```
 
-### 3) Install dependencies
+3) Install dependencies:
 ```powershell
 pip install -r requirements.txt
 ```
 
-## Run (scaffold)
+### Run from source
 ```powershell
 python main.py
 ```
 
-### Quick smoke test
-Runs briefly and exits:
+Optional smoke test:
 ```powershell
 python main.py --smoke-test
 ```
 
-## Build (later, Day 2/Day 3)
-This project uses PyInstaller (per `requirements.txt`) to produce an executable.
+Optional level select:
+```powershell
+python main.py --level market
+```
+Supported level names are listed via:
+```powershell
+python main.py --help
+```
 
-Once gameplay + assets exist, the build step will likely move to a `.spec` file and proper asset bundling.
+### Build instructions (PyInstaller)
+Build using the project spec:
+```powershell
+python -m PyInstaller --clean -y JustGettingHome.spec
+```
 
-## AI tools used / planned
-- Sonnet (Anthropic) to help pick a baseline game idea (and iterate on mechanics).
-- Cursor to generate code and build level layouts/tilemaps from drafts.
-- ChatGPT (and DALL-E) planned/used to generate pixel-art style assets.
+Why the spec file matters:
+- It ensures the required asset folders are bundled (`assets/levels`, `assets/sprites`, `assets/story`).
+- Keep `JustGettingHome.spec` in GitHub so builds are reproducible.
+
+Build outputs:
+- Local build output: `dist/JustGettingHome.exe`
+- Packaged deliverables are also kept in the `deliverables/` folder.
+- Builds are available under the GitHub Releases section.
+
+## Credits
+- Me: `ST10438528 - David Barker`
+- Library: `pygame`
+- Packaging tool: `PyInstaller`
+
+Personal project refinements are logged in `refinements-changes.md`.
+
+## AI Tools Used
+- Sonnet (Anthropic): initial idea generation that was then refined further.
+- Cursor: primary coding assistant during implementation and iteration.
+- Gemini: final image generation used for assets.
+- ChatGPT/DALL-E: initially planned in `plan.md`, but not used in the final project deliverables.
 
