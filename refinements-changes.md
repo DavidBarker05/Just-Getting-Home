@@ -55,6 +55,7 @@
 - Updated bridge level ground so that there is variation in texture
 - Made fire height 24 pixels so the tetxure wouldn't be squashed
 - Added in sprites for player, hero and enemy
+- Added in sprites for house and destroyed house
 
 ## Running notes (updates later)
 - Level content will be drafted first (text-only), then implemented on Day 2 as real tilemaps/logic.
