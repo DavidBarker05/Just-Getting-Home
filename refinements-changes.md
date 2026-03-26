@@ -36,6 +36,7 @@
 - Fixed debug pause/restart timing bug by using one simulation clock for route timing and debug stepping, preventing paused restart desync and route index errors.
 - Fixed route/fire alignment: route points are treated as actor-step cells (one above floor), so break/fire logic now offsets to the actual floor tile when applying destruction/spawn.
 - Cleanup: removed unused `enemy_gap_steps` (hero follow gap is fixed at 1 step now).
+- Day 3 refinement: clamp player to screen left/right bounds (no off-screen drift).
 
 ## Personal Human-Made Refinements
 ### Day 1

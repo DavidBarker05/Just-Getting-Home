@@ -266,6 +266,15 @@ class GameApp:
 
         self.player.update(inp, solids, dt)
 
+        # Prevent the player from leaving the visible screen horizontally.
+        # (No side walls in the tilemap, so without clamping the player could drift off-screen.)
+        if self.player.rect.left < 0:
+            self.player.rect.left = 0
+            self.player.vel_x = 0.0
+        elif self.player.rect.right > self.width:
+            self.player.rect.right = self.width
+            self.player.vel_x = 0.0
+
         # Permanent hazard collision: restart level.
         if not self.debug_god_mode:
             for patch in self.fire_patches:
