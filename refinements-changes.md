@@ -41,6 +41,7 @@
 - Clamp player to screen left/right bounds (no off-screen drift).
 - Add per-object `sprite` support to level JSONs (defaults to shapes when `sprite` is empty) and bundle `assets/sprites/`.
 - Enemy disappears visually when defeated.
+- Proper fight feedback: enemy flashes (instead of hero) during end-of-route combat.
 
 ## Personal Human-Made Refinements
 ### Day 1

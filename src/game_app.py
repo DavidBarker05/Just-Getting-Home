@@ -280,7 +280,8 @@ class GameApp:
         hero_final_index = max(0, end_index - hero_follow_gap_steps)
         if hero_step_index == hero_final_index and not self.phase.enemy_dead:
             if self.enemy.alive and now >= self.next_attack_at:
-                self.hero.attacking_until = now + 0.15
+                # Flash the enemy during the "proper fight" instead of the hero.
+                self.enemy.attacking_until = now + 0.15
                 self.enemy.take_damage(self.DAMAGE)
                 self.next_attack_at = now + self.ATTACK_INTERVAL
 
