@@ -75,5 +75,6 @@
 - Adjusted house position, exit position, and where the hero and enemy stop on the burninghearthrun level
 - Changed the story messages to my own story messages to better match my original idea
 - Fixed spelling and grammar in the story
+- Added references pdf
 
 
