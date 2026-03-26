@@ -77,5 +77,6 @@
 - Fixed spelling and grammar in the story
 - Added references pdf
 - Added AI disclosure to references
+- Added Day 3 deliverables
 
 
