@@ -55,6 +55,10 @@ class GameApp:
         self.debug_step_request_s: float = 0.0
         self._last_caption_update_at = 0.0
 
+        # UI flow: menu -> controls -> game.
+        # Smoke test skips menu so CI/sanity runs don't wait for clicks.
+        self.ui_screen = "game" if smoke_test else "menu"
+
         self.level_def: LevelDef = get_level(self.level_name)
         self._load_level()
 
@@ -181,6 +185,50 @@ class GameApp:
                     self.debug_step_request_s += DEBUG_STEP_MEDIUM_S
                 elif event.key == pygame.K_SLASH:
                     self.debug_step_request_s += DEBUG_STEP_LARGE_S
+        return True
+
+    def _menu_button_rects(self) -> dict[str, pygame.Rect]:
+        button_w = 300
+        button_h = 56
+        gap = 18
+        total_h = button_h * 3 + gap * 2
+        start_y = (self.height - total_h) // 2 + 36
+        x = (self.width - button_w) // 2
+        return {
+            "start": pygame.Rect(x, start_y, button_w, button_h),
+            "controls": pygame.Rect(x, start_y + button_h + gap, button_w, button_h),
+            "quit": pygame.Rect(x, start_y + (button_h + gap) * 2, button_w, button_h),
+        }
+
+    def _process_menu_events(self) -> bool:
+        buttons = self._menu_button_rects()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                # ESC in menu/controls exits the game quickly.
+                return False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                self.ui_screen = "game"
+                return True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                self.ui_screen = "controls"
+                return True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_b and self.ui_screen == "controls":
+                self.ui_screen = "menu"
+                return True
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.ui_screen == "menu":
+                if buttons["start"].collidepoint(event.pos):
+                    self.ui_screen = "game"
+                    return True
+                if buttons["controls"].collidepoint(event.pos):
+                    self.ui_screen = "controls"
+                    return True
+                if buttons["quit"].collidepoint(event.pos):
+                    return False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.ui_screen == "controls":
+                self.ui_screen = "menu"
+                return True
         return True
 
     def _set_actor_to_tile(self, actor: Actor, tile_x: int, tile_y: int) -> None:
@@ -453,6 +501,55 @@ class GameApp:
             self._draw_text_right(line, y)
             y += 18
 
+    def _draw_menu_button(self, rect: pygame.Rect, label: str, hovered: bool) -> None:
+        fill = (95, 120, 145) if hovered else (70, 92, 112)
+        border = (28, 42, 56)
+        pygame.draw.rect(self.screen, fill, rect, border_radius=8)
+        pygame.draw.rect(self.screen, border, rect, width=2, border_radius=8)
+        surf = self.font.render(label, True, (240, 240, 235))
+        x = rect.x + (rect.width - surf.get_width()) // 2
+        y = rect.y + (rect.height - surf.get_height()) // 2
+        self.screen.blit(surf, (x, y))
+
+    def _render_menu(self) -> None:
+        self.screen.fill((18, 22, 30))
+        title_font = pygame.font.SysFont(None, 64)
+        subtitle_font = pygame.font.SysFont(None, 28)
+        title = title_font.render("Just Getting Home", True, (240, 236, 215))
+        subtitle = subtitle_font.render("You are not the main character", True, (190, 196, 210))
+        self.screen.blit(title, ((self.width - title.get_width()) // 2, 70))
+        self.screen.blit(subtitle, ((self.width - subtitle.get_width()) // 2, 132))
+
+        mouse_pos = pygame.mouse.get_pos()
+        buttons = self._menu_button_rects()
+        self._draw_menu_button(buttons["start"], "Start Game", buttons["start"].collidepoint(mouse_pos))
+        self._draw_menu_button(buttons["controls"], "Controls", buttons["controls"].collidepoint(mouse_pos))
+        self._draw_menu_button(buttons["quit"], "Quit", buttons["quit"].collidepoint(mouse_pos))
+
+        hint = self.font.render("Enter: Start   C: Controls   Esc: Quit", True, (178, 186, 200))
+        self.screen.blit(hint, ((self.width - hint.get_width()) // 2, self.height - 44))
+        pygame.display.flip()
+
+    def _render_controls(self) -> None:
+        self.screen.fill((18, 22, 30))
+        title_font = pygame.font.SysFont(None, 52)
+        title = title_font.render("Controls", True, (240, 236, 215))
+        self.screen.blit(title, ((self.width - title.get_width()) // 2, 56))
+
+        lines = [
+            "Move: A/D or Left/Right",
+            "Jump: W / Up / Space",
+        ]
+        if self.debug_available:
+            lines.append("Debug (Python only): F1-F7, , . /")
+        lines.extend(["", "Click anywhere to return", "or press B for Back"])
+        y = 150
+        for line in lines:
+            surf = self.font.render(line, True, (220, 224, 232))
+            self.screen.blit(surf, ((self.width - surf.get_width()) // 2, y))
+            y += 34
+        pygame.display.flip()
+
     def _update_caption(self) -> None:
         if not (self.debug_enabled and self.debug_show_fps):
             pygame.display.set_caption("Just Getting Home")
@@ -476,6 +573,19 @@ class GameApp:
         while running:
             raw_dt = self.clock.tick(SCREEN_FPS) / 1000.0
             raw_dt = min(1.0 / 30.0, raw_dt)
+
+            if self.ui_screen != "game":
+                running = self._process_menu_events()
+                if not running:
+                    break
+                if self.ui_screen == "controls":
+                    self._render_controls()
+                else:
+                    self._render_menu()
+                if self.smoke_test and self.sim_time - smoke_start >= 1.5:
+                    running = False
+                self.sim_time += raw_dt
+                continue
 
             self._jump_pressed = False
             running = self._process_events()

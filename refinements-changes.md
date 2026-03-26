@@ -44,6 +44,8 @@
 - Proper fight feedback: enemy flashes (instead of hero) during end-of-route combat.
 - Final level: added a house prop that swaps to a destroyed sprite after the hero/enemy fight.
 - Adjusted final-level house placement so its bottom-left aligns with the end platform (not buried in ground).
+- Added a start screen with buttons for Start Game, Controls, and Quit (plus a controls screen/back flow).
+- Controls screen now shows debug controls only in Python runs (hidden in packaged build).
 
 ## Personal Human-Made Refinements
 ### Day 1
