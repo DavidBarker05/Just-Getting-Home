@@ -45,9 +45,9 @@
     { "kind": "floor", "sprite": "Dirt_32x32", "x": 21, "y": 0, "w_tiles": 9, "h_tiles": 3 },
     { "kind": "floor", "sprite": "Normal_Grass_32x32", "x": 21, "y": 3, "w_tiles": 9, "h_tiles": 1 },
 
-    { "kind": "player_spawn", "sprite": "", "x": 0, "y": 1 },
-    { "kind": "hero_spawn", "sprite": "", "x": 3, "y": 1 },
-    { "kind": "enemy_spawn", "sprite": "", "x": 3, "y": 1 },
+    { "kind": "player_spawn", "sprite": "Peasant", "x": 0, "y": 1 },
+    { "kind": "hero_spawn", "sprite": "Hero", "x": 3, "y": 1 },
+    { "kind": "enemy_spawn", "sprite": "Enemy", "x": 3, "y": 1 },
     { "kind": "exit_spawn", "sprite": "", "x": 29, "y": 4 },
 
     { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 8, "y": 2 },

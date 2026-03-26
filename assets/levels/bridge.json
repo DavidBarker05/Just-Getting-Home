@@ -153,9 +153,9 @@
     { "kind": "breakable_floor", "sprite": "Bridge_Wood_32x32", "x": 18, "y": 6, "w_tiles": 1, "h_tiles": 1 },
     { "kind": "floor", "sprite": "Bridge_Wood_32x32", "x": 19, "y": 6, "w_tiles": 1, "h_tiles": 1 },
 
-    { "kind": "player_spawn", "sprite": "", "x": 0, "y": 12 },
-    { "kind": "hero_spawn", "sprite": "", "x": 3, "y": 12 },
-    { "kind": "enemy_spawn", "sprite": "", "x": 3, "y": 12 },
+    { "kind": "player_spawn", "sprite": "Peasant", "x": 0, "y": 12 },
+    { "kind": "hero_spawn", "sprite": "Hero", "x": 3, "y": 12 },
+    { "kind": "enemy_spawn", "sprite": "Enemy", "x": 3, "y": 12 },
     { "kind": "exit_spawn", "sprite": "", "x": 29, "y": 12 },
 
     { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 7, "y": 9 },

@@ -49,9 +49,9 @@
     { "kind": "floor", "sprite": "Market_Tile_32x32", "x": 8, "y": 8, "w_tiles": 2, "h_tiles": 1 },
     { "kind": "floor", "sprite": "Market_Tile_32x32", "x": 12, "y": 10, "w_tiles": 4, "h_tiles": 1 },
 
-    { "kind": "player_spawn", "sprite": "", "x": 0, "y": 1 },
-    { "kind": "hero_spawn", "sprite": "", "x": 5, "y": 1 },
-    { "kind": "enemy_spawn", "sprite": "", "x": 5, "y": 1 },
+    { "kind": "player_spawn", "sprite": "Peasant", "x": 0, "y": 1 },
+    { "kind": "hero_spawn", "sprite": "Hero", "x": 5, "y": 1 },
+    { "kind": "enemy_spawn", "sprite": "Enemy", "x": 5, "y": 1 },
     { "kind": "exit_spawn", "sprite": "", "x": 29, "y": 1 },
 
     { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 9, "y": 9 },
