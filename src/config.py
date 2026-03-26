@@ -10,7 +10,7 @@ GRAVITY = 2200.0  # px/s^2
 JUMP_VELOCITY = -820.0  # px/s (negative is up)
 
 FIRE_W = 24
-FIRE_H = 12
+FIRE_H = 24
 
 # Debug time-step increments (seconds)
 DEBUG_STEP_SMALL_S = 0.1

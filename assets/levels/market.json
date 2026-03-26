@@ -38,33 +38,33 @@
   ],
   "hero_step_interval_s": 0.22,
   "objects": [
-    { "kind": "floor", "sprite": "", "x": 0, "y": 0, "w_tiles": 30, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "Market_Tile_32x32", "x": 0, "y": 0, "w_tiles": 30, "h_tiles": 1 },
 
-    { "kind": "floor", "sprite": "", "x": 0, "y": 3, "w_tiles": 3, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "Market_Tile_32x32", "x": 0, "y": 3, "w_tiles": 3, "h_tiles": 1 },
 
-    { "kind": "floor", "sprite": "", "x": 2, "y": 7, "w_tiles": 1, "h_tiles": 1 },
-    { "kind": "breakable_floor", "sprite": "", "x": 3, "y": 7, "w_tiles": 2, "h_tiles": 1 },
-    { "kind": "floor", "sprite": "", "x": 5, "y": 7, "w_tiles": 1, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "Market_Tile_32x32", "x": 2, "y": 7, "w_tiles": 1, "h_tiles": 1 },
+    { "kind": "breakable_floor", "sprite": "Market_Tile_32x32", "x": 3, "y": 7, "w_tiles": 2, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "Market_Tile_32x32", "x": 5, "y": 7, "w_tiles": 1, "h_tiles": 1 },
 
-    { "kind": "floor", "sprite": "", "x": 8, "y": 8, "w_tiles": 2, "h_tiles": 1 },
-    { "kind": "floor", "sprite": "", "x": 12, "y": 10, "w_tiles": 4, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "Market_Tile_32x32", "x": 8, "y": 8, "w_tiles": 2, "h_tiles": 1 },
+    { "kind": "floor", "sprite": "Market_Tile_32x32", "x": 12, "y": 10, "w_tiles": 4, "h_tiles": 1 },
 
     { "kind": "player_spawn", "sprite": "", "x": 0, "y": 1 },
     { "kind": "hero_spawn", "sprite": "", "x": 5, "y": 1 },
     { "kind": "enemy_spawn", "sprite": "", "x": 5, "y": 1 },
     { "kind": "exit_spawn", "sprite": "", "x": 29, "y": 1 },
 
-    { "kind": "fire_spawn", "sprite": "", "x": 9, "y": 9 },
-    { "kind": "fire_spawn", "sprite": "", "x": 10, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 11, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 12, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 13, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 14, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 15, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 16, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 17, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 18, "y": 1 },
-    { "kind": "fire_spawn", "sprite": "", "x": 19, "y": 1 }
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 9, "y": 9 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 10, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 11, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 12, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 13, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 14, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 15, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 16, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 17, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 18, "y": 1 },
+    { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 19, "y": 1 }
   ]
 }
 
