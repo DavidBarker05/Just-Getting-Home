@@ -76,5 +76,6 @@
 - Changed the story messages to my own story messages to better match my original idea
 - Fixed spelling and grammar in the story
 - Added references pdf
+- Added AI disclosure to references
 
 
