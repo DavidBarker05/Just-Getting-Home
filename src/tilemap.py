@@ -22,6 +22,9 @@ class TileMap:
         self.tile_sprites: dict[tuple[int, int], str] = {}
         # Optional sprite name per fire marker cell.
         self.fire_sprites: dict[tuple[int, int], str] = {}
+        # Decorative props rendered as sprites (e.g. house at the end).
+        # Stored in internal pixel coordinates.
+        self.props: list[dict[str, Any]] = []
 
         self.spawns = self._parse_objects(level_def.objects)
 
@@ -127,6 +130,33 @@ class TileMap:
                 sprite_name = str(obj.get("sprite") or "").strip()
                 if sprite_name:
                     self.fire_sprites[(cell_x, cell_y_internal)] = sprite_name
+            elif kind == "house":
+                # Decorative prop (bottom-left origin in JSON).
+                # x/y refer to the *bottom-left tile* of the prop footprint.
+                x_tile = int(obj["x"])
+                y_tile = int(obj["y"])
+                w_tiles = int(obj.get("w_tiles") or 1)
+                h_tiles = int(obj.get("h_tiles") or 1)
+                sprite_name = str(obj.get("sprite") or "").strip() or None
+                destroyed_sprite_name = str(obj.get("destroyed_sprite") or "").strip() or None
+
+                # Convert bottom-left tile coord to internal pixel rect aligned to the floor:
+                # - y_internal is the tile row of the prop's bottom edge.
+                y_internal_bottom = (self.height_tiles - 1) - y_tile
+                px = x_tile * self.tile_size
+                py_bottom = (y_internal_bottom + 1) * self.tile_size
+                pw = w_tiles * self.tile_size
+                ph = h_tiles * self.tile_size
+                rect = pygame.Rect(int(px), int(py_bottom - ph), int(pw), int(ph))
+
+                self.props.append(
+                    {
+                        "kind": "house",
+                        "rect": rect,
+                        "sprite": sprite_name,
+                        "destroyed_sprite": destroyed_sprite_name,
+                    }
+                )
 
         missing = [k for k, v in required.items() if v is None]
         if missing:

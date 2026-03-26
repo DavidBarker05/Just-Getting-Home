@@ -374,6 +374,29 @@ class GameApp:
         for patch in self.fire_patches:
             patch.draw(self.screen)
 
+        # Decorative props (e.g. house at the end).
+        for prop in getattr(self.tilemap, "props", []):
+            if prop.get("kind") != "house":
+                continue
+            rect = prop.get("rect")
+            if rect is None:
+                continue
+
+            # On the final level, swap to the destroyed house sprite after the fight ends.
+            is_final_level = self.level_index == (len(self.level_order) - 1)
+            if is_final_level and self.phase.enemy_dead:
+                sprite_name = prop.get("destroyed_sprite") or prop.get("sprite")
+            else:
+                sprite_name = prop.get("sprite")
+
+            surf = self._sprite_surface_or_none(sprite_name)
+            if surf is not None:
+                self.screen.blit(pygame.transform.smoothscale(surf, rect.size), rect.topleft)
+            else:
+                # Fallback: simple placeholder rectangle if no sprite is provided.
+                pygame.draw.rect(self.screen, (150, 110, 80), rect, border_radius=6)
+                pygame.draw.rect(self.screen, (70, 50, 35), rect, width=2, border_radius=6)
+
         self.hero.draw(self.screen, now)
         if self.enemy.alive:
             self.enemy.draw(self.screen, now)

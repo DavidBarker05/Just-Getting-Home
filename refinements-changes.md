@@ -42,6 +42,7 @@
 - Add per-object `sprite` support to level JSONs (defaults to shapes when `sprite` is empty) and bundle `assets/sprites/`.
 - Enemy disappears visually when defeated.
 - Proper fight feedback: enemy flashes (instead of hero) during end-of-route combat.
+- Final level: added a house prop that swaps to a destroyed sprite after the hero/enemy fight.
 
 ## Personal Human-Made Refinements
 ### Day 1
