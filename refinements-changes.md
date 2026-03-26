@@ -43,6 +43,7 @@
 - Enemy disappears visually when defeated.
 - Proper fight feedback: enemy flashes (instead of hero) during end-of-route combat.
 - Final level: added a house prop that swaps to a destroyed sprite after the hero/enemy fight.
+- Adjusted final-level house placement so its bottom-left aligns with the end platform (not buried in ground).
 
 ## Personal Human-Made Refinements
 ### Day 1

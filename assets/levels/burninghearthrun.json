@@ -50,7 +50,7 @@
     { "kind": "enemy_spawn", "sprite": "Enemy", "x": 3, "y": 1 },
     { "kind": "exit_spawn", "sprite": "", "x": 29, "y": 4 },
 
-    { "kind": "house", "sprite": "House_Normal_96x96", "destroyed_sprite": "House_Destroyed_96x96", "x": 26, "y": 1, "w_tiles": 3, "h_tiles": 3 },
+    { "kind": "house", "sprite": "House_Normal_96x96", "destroyed_sprite": "House_Destroyed_96x96", "x": 26, "y": 4, "w_tiles": 3, "h_tiles": 3 },
 
     { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 8, "y": 2 },
     { "kind": "fire_spawn", "sprite": "Fire_24x24", "x": 9, "y": 2 },
