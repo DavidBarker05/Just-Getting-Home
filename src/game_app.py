@@ -374,7 +374,8 @@ class GameApp:
             patch.draw(self.screen)
 
         self.hero.draw(self.screen, now)
-        self.enemy.draw(self.screen, now)
+        if self.enemy.alive:
+            self.enemy.draw(self.screen, now)
         if self.player.sprite_surface is not None:
             self.screen.blit(
                 pygame.transform.smoothscale(self.player.sprite_surface, self.player.rect.size),
