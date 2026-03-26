@@ -51,6 +51,10 @@
 - Build packaging updated: include `assets/story/story.json` in the PyInstaller bundle.
 - Updated CLI help text for `--level` to list all supported levels.
 - Removed old placeholder sections (`Running notes` and `Open questions`) now that Day 3 decisions are finalized.
+- Updated `plan.md` to remove non-required level draft placeholders and add a concrete Day 1/2/3 task list.
+- Refined `plan.md` task list again to align with originally planned assignment tasks (removed later-added scope items like debug/menu/story from planned tasks).
+- Clarified `plan.md` Day 1 git milestone rationale: repository setup/push happened early to allow safe rollback from the start.
+- Restructured `plan.md` for clarity: moved AI tools to a project-wide section and nested each day's task list under that day's milestones.
 
 ## Personal Human-Made Refinements
 ### Day 1
