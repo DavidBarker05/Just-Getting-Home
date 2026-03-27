@@ -82,7 +82,9 @@ Personal project refinements are logged in `refinements-changes.md`.
 
 ## AI Reflections
 ### Where did AI excel, and where did it mislead or limit me?
-I would say that the AI excelled extremely well when it came to producing content fast. It was also very good at being able to understand a lot of bugs and able to fix them relatively easily. I would say that Cursor’s biggest limitation was more quality. I found the best way to make sure errors get fixed faster is to understand where/how an error occurs. I spent a lot of day two making it fix bugs or add ways for me to debug or even add stuff to the game myself. One time I saw a bug and figured out why it happened and what Cursor did that caused this, and when I told it the bug, it told me that it wasn’t a bug, I then had to explain the whole reason for it to fix it. It also was not very good at generating levels, so I ended up having to write the JSON files for each level.
+I would say that the AI excelled extremely well when it came to producing content fast. It was also very good at being able to understand a lot of bugs and able to fix them relatively easily.
+
+I would say that Cursor’s biggest limitation was more quality. I found the best way to make sure errors get fixed faster is to understand where/how an error occurs. I spent a lot of day two making it fix bugs or add ways for me to debug or even add stuff to the game myself. One time I saw a bug and figured out why it happened and what Cursor did that caused this, and when I told it the bug, it told me that it wasn’t a bug, I then had to explain the whole reason for it to fix it. It also was not very good at generating levels, so I ended up having to write the JSON files for each level.
 
 Nano Banana 2 had similar benefits and problems. It produced lots of pictures relatively fast, but they also weren’t the best quality. I had to spend a lot of time in Photoshop making fixed and changes so that the images were good for the game which limited the actual speed of image creating by a lot.
 
