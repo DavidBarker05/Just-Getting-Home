@@ -79,5 +79,6 @@
 - Added AI disclosure to references
 - Added Day 3 deliverables
 - Added AI reflections
+- Added AI ethics statement
 
 

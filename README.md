@@ -120,3 +120,8 @@ Also, in general, relying on AI for this entire project feels ethically question
 For future work I can make sure that my work with AI remains responsible and authentic by using AI as a tool rather than relying on it to do everything. I can use AI as a way to teach me things that I don’t understand, I could use it to help me find bugs in code, or I could use it to show me the steps to finding the answer instead of it just giving me the answer. I can do most of the work myself and AI can just be there to fill in the gaps that I leave behind as if it were helping me, not as if I was managing it and hoping it does everything right. I would try to use it more responsibly and not rely on it.
 
 For image generation I could use AI to generate concept art for the game, which I could then use as a basis for my own art. Although I am not the best artist, I can still draw create assets to a basic level. This would also help me feel better about my project and make it feel more authentic to not just others but myself.
+
+## AI Ethics Statement
+This project complies with originality and fair use. It doesn't use any person's assets without giving them permission.
+All use of AI withing this project falls under the specifications that were given for the assignment.
+No work was directly copied from any source. AI art is different any some way from any possible assets that I know of which makes it fall under fair user.
