@@ -123,5 +123,7 @@ For image generation I could use AI to generate concept art for the game, which 
 
 ## AI Ethics Statement
 This project complies with originality and fair use. It doesn't use any person's assets without giving them permission.
+
 All use of AI withing this project falls under the specifications that were given for the assignment.
+
 No work was directly copied from any source. AI art is different any some way from any possible assets that I know of which makes it fall under fair user.
